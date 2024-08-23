@@ -1,21 +1,23 @@
-# Family CashCard System
-Here goes the title
-# cashcard
-Description
+# PingMe Messaging System
 
-# CashCard Service #
+# PingMe
+The project focuses on having a user interface for chatting system PingMe
+
+# PingMe Service #
 
 `#JAVA` `#SPRING`
 
-Maintained by aniruddhams2023@gmail.com [Aniruddha Shivananda]
+Maintained by 
+aniruddhams2023@gmail.com [Aniruddha Shivananda]
+surya-sukumar [Surya Sukumar]
 
-This project provides the backend service necessary for the cashcard API.
+This project provides the backend service necessary for the PingMe API.
 
 # Java Version
 
 Default Java Version -  **22**.
 
-1.I have taken TDD(Test Driven Development) approach on development of the project
+1.We have taken TDD(Test Driven Development) approach on development of the project
 this is mainly because by asserting expected behavior before implementing the desired 
 functionality, we’re designing the system based on what we want it to do, rather than what
 the system already does.
@@ -31,3 +33,4 @@ the system already does.
                                                                                                                                                   |
 ## Who do I talk to? ###
 Aniruddha Shivananda: aniruddhams2023@gmail.com
+Surya Sukumar: surya-sukumar
