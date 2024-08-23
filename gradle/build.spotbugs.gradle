@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: "com.github.spotbugs"
+spotbugs {
+    toolVersion = '4.8.3'
+    showProgress = false
+//    reportLevel = 'default'
+    onlyAnalyze = ['PingMe.*', 'PingMe.-']
+}
+[spotbugsMain].each { task ->
+    task.configure {
+        ignoreFailures = false
+        excludeFilter = file("./spotbugs-exclude.xml")
+        //To test build failing comment out omitVisitors and build will fail due to P0 error.
+        omitVisitors = ['FindNullDeref', 'UnreadFields']
+        reports {
+            html {
+                enabled = true
+                stylesheet = 'fancy-hist.xsl'
+            }
+        }
+    }
+}
+[spotbugsTest].each { task ->
+    task.configure {
+        ignoreFailures = true
+        reports {
+            html {
+                enabled = true
+                stylesheet = 'fancy-hist.xsl'
+            }
+        }
+    }
+}

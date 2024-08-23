@@ -1,0 +1,4038 @@
+openapi: 3.0.1
+info:
+  title: DC Vehicle Selection APIs
+  description: Digital Checkout Vehicle Selection RESTful API documentation.
+  termsOfService: https://sixt.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - description: Dev url
+    url: https://api-dev.goorange.sixt.com/{basePath}
+    variables:
+      basePath:
+        default: api/
+  - description: Stage url
+    url: https://api-stage.goorange.sixt.com/{basePath}
+    variables:
+      basePath:
+        default: api/
+tags:
+  - name: Digital-Checkout
+    externalDocs:
+      description: Design Link
+      url: https://www.figma.com/file/cx6GOkn9XsgLKkPFl5dc4O/ZEN-unified-flow-Release-Candidate
+paths:
+  /{rentalActivityId}/entry:
+    get:
+      tags:
+        - Entry
+      summary: Gets required details for entry screen.
+      description: |-
+        # Gets required details for entry screen
+
+        ## Example:
+
+        ```
+        GET /v1/digital-checkout/115646542/entry?currency=USD -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: EntryDetails
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          description: currency code
+          required: true
+          schema:
+            pattern: ^.{3}$
+            type: string
+      responses:
+        200:
+          description: Returns entry response object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `BOOKING_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `REQUESTED_RANGE_NOT_SATISFIABLE` - Vehicle Selection not Allowed Currentl.
+            - `BOOKING_NOT_ELIGIBLE` - in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/onboarding-info:
+    get:
+      tags:
+        - Onboard MCI
+      summary: Gets required details for MCI onboard screen.
+      description: |-
+        # Gets required details for entry screen
+        ## Example:
+        ```
+        GET /digital-checkout/115646542/onboarding-info -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: MCI Onboard
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns entry response object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnBoardMCIResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: {}
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `BOOKING_NOT_FOUND` - The reservation was not found.
+          content: {}
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: {}
+        416:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `REQUESTED_RANGE_NOT_SATISFIABLE` - Vehicle Selection not Allowed Currently.
+            - `BOOKING_NOT_ELIGIBLE` - in case of non zen or next not eligible bookings
+          content: {}
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: {}
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/vehicle/list:
+    get:
+      tags:
+        - VehicleSelection
+      summary: Get vehicle-list for vehicle selection
+      description: Get Vehicle list based on the type of the reservation-id for vehicle
+        selection
+      operationId: GetVehicles
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: RentalActivity Id for Vehicle Selection
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          description: currency code
+          required: true
+          schema:
+            pattern: ^.{3}$
+            type: string
+        - name: vehicleListStrategy
+          in: query
+          description: vehicleListStrategy to use DS_MODEL|CONFIG
+          schema:
+            type: string
+        - name: terminal
+          in: query
+          description: terminal information
+          schema:
+            type: string
+        - name: experiment
+          in: query
+          description: |-
+            Experiment Details
+            Ex: feature_xpress_label:original
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleSelectionResponse'
+        400:
+          description: |-
+            "HTTP errors may have one of the following error codes:\n
+            - `INVALID_BOOKING_ID` - Invalid reservationId type\n"
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            "HTTP errors may have one of the following error codes:\n
+            - `INTERNAL_SERVER_ERROR`\n"
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+  /v2/{rentalActivityId}/vehicle/list:
+    get:
+      tags:
+        - VehicleSelection
+      summary: Get vehicle-list for vehicle selection
+      description: Get Vehicle list based on the type of the reservation-id for vehicle
+        selection
+      operationId: GetVehicleList
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: RentalActivity Id for Vehicle Selection
+          required: true
+          schema:
+            type: string
+        - name: filter
+          in: query
+          description: to be used  in case of exhaustive list need be passed. possible values, ALL
+          schema:
+            type: string
+        - name: terminal
+          in: query
+          description: terminal information
+          schema:
+            type: string
+        - name: experiment
+          in: query
+          description: |-
+            Experiment Details
+            Ex: feature_xpress_label:original
+              TODO- This field to be removed as map after the aggregation of reservation is done for experiment analysis.
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleListResponseV2'
+        400:
+          description: |-
+            "HTTP errors may have one of the following error codes:\n
+            - `INVALID_BOOKING_ID` - Invalid reservationId type\n"
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            "HTTP errors may have one of the following error codes:\n
+            - `INTERNAL_SERVER_ERROR`\n"
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+  /{rentalActivityId}/{vehicleId}/attributes:
+    get:
+      tags:
+        - VehicleSelection
+      summary: Get vehicle-attribute for a given vehicle
+      description: Get vehicle-attribute  based on the vehicleId
+      operationId: GetVehicleAttributes
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: RentalActivity Id for Vehicle Selection
+          required: true
+          schema:
+            type: string
+        - name: vehicleId
+          in: path
+          description: VehicleId Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleAttributeResponse'
+        400:
+          description: |-
+            "HTTP errors may have one of the following error codes:\n
+            - `INVALID_BOOKING_ID` - Invalid reservationId type\n"
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            "HTTP errors may have one of the following error codes:\n
+            - `INTERNAL_SERVER_ERROR`\n"
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/vehicle/block:
+    put:
+      tags:
+        - BlockVehicle
+      summary: Blocks the given vehicle to the given reservation, adding an upsell
+        charge if necessary.
+      description: |-
+        # Block vehicle to rental activity
+
+        ## Example:
+
+        ```
+        PUT /v1/digital-checkout/115646542/vehicle/block -H "Authorization: Bearer TOKEN"
+        {
+        "vehicleId": "1234",
+        "configurationId": "5678-2342-2342-234234"
+        }
+        ```
+      operationId: BlockVehicle
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/BlockVehicleRequest'
+        required: true
+      responses:
+        200:
+          description: datetime inside response present in case сustomer blocked vehicle
+            via app, also if customer blocked same vehicle again (but just with less
+            time). In case of blocking prebooked/guaranteed model - datetime and timezone
+            are null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleBlockDateTime'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_VEHICLE` - The vehicle id was missing or invalid.
+            - `INVALID_PERSON` - PersonID is missing from token.
+            - `INVALID_TIME_FOR_BLOCK_VEHICLE_REQUEST` - Vehicle cannot be blocked during this time period
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `VEHICLE_NOT_AVAILABLE` - Vehicle you selected is no longer available, please select new vehicle.
+            - `CONFIGURATION_NOT_FOUND` - If the configuration is non-existent or has expired.
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        501:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `VEHICLE_ALREADY_BLOCKED` - The vehicle was already blocked to another reservation.
+            - `RESERVATION_NOT_IN_TIMERANGE` - The reservation is not within the timerange for using block endpoint.
+            - `VEHICLE_SELECTION_NOT_ALLOWED` - The reservation or branch does not support vehicle selection.
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: BlockVehicleRequest
+  /{rentalActivityId}/extras:
+    get:
+      tags:
+        - BookingDetails
+      summary: Returns the reservation data including bookable charges and price breakdown.
+      description: |-
+        # Gets rental activity data including bookable charges and price breakdown.
+
+        ## Example:
+
+        ```
+        GET /v1/digital-checkout/115646542/extras?currency=USD -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: BookingDetails
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          description: currency code
+          required: true
+          schema:
+            pattern: ^.{3}$
+            type: string
+      responses:
+        200:
+          description: Returns protections, extras and blocked vehicle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_BOOKING_ID` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/extras/preview:
+    post:
+      tags:
+        - BookingDetails
+      summary: Endpoint for price recalculation(without persistence)
+      description: |-
+        # Endpoint for price recalculation (without persistence)
+
+        ## Example:
+
+        ```
+        PUT /v1/digital-checkout/115646542/extras/preview?currency=USD -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: BookingDetailsPreview
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/PreviewUpdateBookingRequest'
+        required: true
+      responses:
+        200:
+          description: Returns a configuration id as well as a Reservation object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: PreviewUpdateBookingRequest
+  /{rentalActivityId}/extras/update:
+    put:
+      tags:
+        - BookingDetails
+      summary: Endpoint for final update fo extras.
+      description: |-
+        # Endpoint for final update of extras.
+
+        ## Example:
+
+        ```
+        PUT /v1/digital-checkout/115646542/extras/update?currency=USD -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: BookingDetailsUpdate
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+        - name: experiment
+          in: query
+          description: |-
+            Experiment Details
+            Ex: feature_xpress_nudge:original;feature_xpress_banner:original
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/UpdateBookingRequest'
+        required: true
+      responses:
+        200:
+          description: Returns a configuration id as well as a Reservation object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: UpdateBookingRequest
+
+  /{rentalActivityId}/configureProtectionAddOn:
+    get:
+      tags:
+        - OfferDetails
+      summary: Returns the reservation data including bookable charges and price breakdown.
+      description: |-
+        # Gets rental activity data including bookable charges and price breakdown.
+
+        ## Example:
+
+        ```
+        GET /v1/digital-checkout/115646542/configureProtectionAddOn "Authorization: Bearer TOKEN"
+        ```
+      operationId: getBookingDetails
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns protections, addons and price breakup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferConfiguration'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_BOOKING_ID` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+    post:
+      tags:
+        - OfferDetails
+      summary: Endpoint for price recalculation(without persistence)
+      description: |-
+        # Endpoint for price recalculation (without persistence)
+
+        ## Example:
+
+        ```
+        PUT /v1/digital-checkout/115646542/configureProtectionAddOn -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: previewBookingDetails
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/UpdateOfferConfigurationRequest'
+        required: true
+      responses:
+        200:
+          description: Returns a configuration id as well as a Reservation object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferConfiguration'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: UpdateOfferConfigurationRequest
+    put:
+      tags:
+        - OfferDetails
+      summary: Endpoint for final update fo extras.
+      description: |-
+        # Endpoint for final update of extras.
+
+        ## Example:
+
+        ```
+        PUT /v1/digital-checkout/115646542/configureProtectionAddOn -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: updateBookingDetails
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/UpdateOfferConfigurationRequest'
+        required: true
+      responses:
+        200:
+          description: Returns a configuration id as well as a Reservation object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferConfiguration'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: UpdateOfferConfigurationRequest
+
+  /{rentalActivityId}/driver:
+    get:
+      tags:
+        - UserDetails
+      summary: Returns the driver data including details requested in query if present.
+      description: "# Gets rental activity data including data queried in identifier.\n\
+        \n## Example:\n\n```\nGET /v1/digital-checkout/115646542/driver?identifiers=DEFAULT_PARAMS\
+        \ -H \"Authorization: Bearer TOKEN\"\nGET /v1/digital-checkout/115646542/driver?identifiers=RESIDENTIAL_ADDRESS,ID_CARD_DETAILS\
+        \ -H \"Authorization: Bearer TOKEN\"\nGET /v1/digital-checkout/115646542/driver?identifiers=TAX_ID\
+        \ -H \"Authorization: Bearer TOKEN\"        \n```"
+      operationId: UserDetails
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+        - name: identifiers
+          in: query
+          description: identifier to identify which field is to be updated
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              default: defaultParam
+              enum:
+                - RESIDENTIAL_ADDRESS
+                - ID_CARD_DETAILS
+                - DVLA
+                - DEFAULT_PARAMS
+      responses:
+        200:
+          description: Returns boolean flags for each fields and details of user if
+            its already there in rental-activity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailsResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_BOOKING_ID` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/driver/update:
+    put:
+      tags:
+        - UserDetails
+      summary: Endpoint for final update of User details.
+      description: |-
+        # Endpoint for final update of user details.
+
+        ## Example:
+
+        ```
+        PUT /v1/digital-checkout/115646542/driver/update -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: UserDetailsUpdate
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/UpdateUserDetailsRequest'
+        required: true
+      responses:
+        200:
+          description: Returns an object with boolean flag on success/failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserDetailsResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: UpdateUserDetailsRequest
+  /{rentalActivityId}/payment:
+    get:
+      tags:
+        - Payment
+      summary: Gets payment information
+      description: |-
+        # Gets payment information
+
+        ## Example:
+
+        ```
+        GET /v1/digital-checkout/115646542/payment -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: GetPaymentInformation
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        402:
+          description: |-
+            {"errorCode": "VEHICLE_NOT_AVAILABLE", "title": "Vehicle not available", "message": "Vehicle you selected is no longer available, please select new vehicle.", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_FAILED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_REJECTED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            HTTP errors can be the list mentioned by payment team listed in
+            https://confluence.sixt.com/pages/viewpage.action?spaceKey=WEBAPP&title=Payment+error+communication+-+Prepaid
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /v2/{rentalActivityId}/payment:
+    get:
+      tags:
+        - Payment
+      summary: Gets payment information
+      description: |-
+        # Gets payment information
+        ## Example:
+        ```
+        GET /v1/digital-checkout/v2/115646542/payment -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: GetPaymentInformationV2
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponseV2'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        402:
+          description: |-
+            {"errorCode": "VEHICLE_NOT_AVAILABLE", "title": "Vehicle not available", "message": "Vehicle you selected is no longer available, please select new vehicle.", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_FAILED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_REJECTED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            HTTP errors can be the list mentioned by payment team listed in
+            https://confluence.sixt.com/pages/viewpage.action?spaceKey=WEBAPP&title=Payment+error+communication+-+Prepaid
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /v3/{rentalActivityId}/payment/summary:
+    get:
+      tags:
+        - Payment
+      summary: Gets payment information
+      description: |-
+        # Gets payment information
+        ## Example:
+        ```
+        GET /v1/digital-checkout/v3/115646542/payment -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: GetPaymentInformationV3
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponseV3'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        402:
+          description: |-
+            {"errorCode": "VEHICLE_NOT_AVAILABLE", "title": "Vehicle not available", "message": "Vehicle you selected is no longer available, please select new vehicle.", "retriable": false}
+            HTTP errors can be the list mentioned by payment team listed in
+            https://confluence.sixt.com/pages/viewpage.action?spaceKey=WEBAPP&title=Payment+error+communication+-+Prepaid
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+  /{rentalActivityId}/price/detail:
+    get:
+      tags:
+        - Price
+      summary: Gets price information
+      description: |-
+        # Gets price information
+        ## Example:
+        ```
+        GET /v1/digital-checkout/115646542/price/detail -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: GetPriceDetail
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns price breakup information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceDetailResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        402:
+          description: |-
+            {"errorCode": "VEHICLE_NOT_AVAILABLE", "title": "Vehicle not available", "message": "Vehicle you selected is no longer available, please select new vehicle.", "retriable": false}
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+
+  /{rentalActivityId}/payment/validate:
+    post:
+      tags:
+        - Payment
+      summary: Validate payment information
+      description: '# Validates payment information'
+      operationId: ValidatePaymentInformation
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      responses:
+        200:
+          description: Get payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: PaymentRequest
+  /v2/{rentalActivityId}/payment/validate:
+    post:
+      tags:
+        - Payment
+      summary: Validate payment information V2
+      description: '# Validates payment information V2'
+      operationId: ValidatePaymentInformationV2
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      responses:
+        200:
+          description: Get payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponseV2'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: PaymentRequest
+  /v3/{rentalActivityId}/payment/validate:
+    post:
+      tags:
+        - Payment
+      summary: Validate payment information V2
+      description: |-
+        # Validates payment information
+        ## Example:
+        ```
+        GET /v1/digital-checkout/v3/115646542/payment/validate -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: ValidatePaymentInformationV3
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      responses:
+        200:
+          description: Returns payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponseV3'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        402:
+          description: |-
+            {"errorCode": "VEHICLE_NOT_AVAILABLE", "title": "Vehicle not available", "message": "Vehicle you selected is no longer available, please select new vehicle.", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_FAILED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_REJECTED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            HTTP errors can be the list mentioned by payment team listed in
+            https://confluence.sixt.com/pages/viewpage.action?spaceKey=WEBAPP&title=Payment+error+communication+-+Prepaid
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/payment/authorize:
+    post:
+      tags:
+        - Payment
+      summary: Update payment information
+      description: '# Updates payment information'
+      operationId: UpdatePaymentInformation
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/AuthorizePaymentRequest'
+        required: true
+      responses:
+        200:
+          description: Get payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizePaymentResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        402:
+          description: |-
+            {"errorCode": "VEHICLE_NOT_AVAILABLE", "title": "Vehicle not available", "message": "Vehicle you selected is no longer available, please select new vehicle.", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_FAILED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            {"errorCode": "PAYMENT_AUTH_REJECTED", "title": "Payment failed", "message": "Looks like the payment didn’t go through", "retriable": false}
+            {"errorCode": "PAYMENT_TYPE_REJECTED", "title": "Payment type not supported", "message": "Payment type
+            not supported",
+            "retriable": false}
+            {"errorCode": "PAYMENT_ACTION_REQUIRED", "title": "Please update the app", "message": "Please update your App to the latest version to complete the payment authorization process.", "retriable": false}
+            HTTP errors can be the list mentioned by payment team listed in
+            https://confluence.sixt.com/pages/viewpage.action?spaceKey=WEBAPP&title=Payment+error+communication+-+Prepaid
+            https://confluence.sixt.com/pages/viewpage.action?spaceKey=ZEN&title=RENT+Old+3DS+Flow+API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: AuthorizePaymentRequest
+  /{rentalActivityId}/payment/counter:
+    post:
+      tags:
+        - Payment
+      summary: Payment Counter
+      description: '# Payment Counter'
+      operationId: PaymentCounter
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Get payment counter information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentCounterResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        416:
+          description: in case of unstisfyable request - `BOOKING_NOT_ELIGIBLE` -
+            in case of non zen or next not eligible bookings
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /discount/{rentalActivityId}/eligibility:
+    get:
+      tags:
+        - discount
+      summary: Gets discount eligibility details for rentalActivity.
+      description: |-
+        # Gets discount eligibility details for rentalActivity, takes rentalActivity/reservationid in parameter
+
+        ## Example:
+
+        ```
+        GET /v1/digital-checkout/115646542/eligibility?currency=USD&identifierType=RENTAL_ACTIVITY
+        ```
+      operationId: DiscountEligibility
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          description: currency code
+          required: true
+          schema:
+            pattern: ^.{3}$
+            type: string
+        - name: identifierType
+          in: query
+          description: Identifier type for rentalActivityid in path param values will
+            be RENTAL_ACTIVITY/RESERVATION
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns DiscountEligibility response object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EligibleDiscount'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `BOOKING_NOT_FOUND` - The reservation was not found.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/prepare:
+    post:
+      tags:
+        - Prepare
+      summary: Sync all documentation data with RA before starting the checkout
+      description: |-
+        # Do a prepare
+
+        ## Example:
+
+        ```
+        POST /v1/digital-checkout/115646542/prepare -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: Prepare
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns success if data is synced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrepareResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+  /{rentalActivityId}/corporateDetails:
+    put:
+      tags:
+        - CorporateDetails
+      summary: Endpoint for final update of corporate details.
+      description: |-
+        # Endpoint for final update of corporate details.
+        ## Example:
+        ```
+        PUT /v1/digital-checkout/115646542/corporateDetails -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: CorporateDetailsUpdate
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/UpdateCorporateDetailsRequest'
+        required: true
+      responses:
+        200:
+          description: Returns an object with boolean flag on success/failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCorporateDetailsResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `RESERVATION_NOT_FOUND` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      x-codegen-request-body-name: UpdateCorporateDetailsRequest
+  /{rentalActivityId}/smsConsent:
+    get:
+      tags:
+        - SMSConsent
+      summary: Returns SMS Consent details if present.
+      description: |-
+        # Gets SMS consent data including mobile number and flag indicating weather sms is opted.
+
+        ## Example:
+
+        ```
+        GET /v1/digital-checkout/115646542/smsConsent -H "Authorization: Bearer TOKEN"
+        ```
+      operationId: SMSConsent
+      parameters:
+        - name: rentalActivityId
+          in: path
+          description: Rental Activity Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns SMS Consent response details for the queried rental-activity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SMSConsentResponse'
+        400:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_REQUEST` - PersonID is missing from token.
+          content: { }
+        404:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INVALID_BOOKING_ID` - The reservation was not found.
+          content: { }
+        409:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INITIATED_AT_COUNTER` - The reservation already initiated at counter.
+          content: { }
+        500:
+          description: |-
+            HTTP errors may have one of the following error codes:
+            - `INTERNAL_SERVER_ERROR` - If there is some error talking to a dependency
+          content: { }
+        default:
+          description: HTTP errors are represented in the following format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+components:
+  schemas:
+    PaymentResponseV3:
+      type: object
+      required:
+        - vehicleDisplayname
+        - vehicleImage
+        - trip
+        - priceInfo
+        - notications
+        - rentalUrls
+        - legalConsent
+        - reservationId
+        - reservationResetTime
+        - totalPayableAmount
+        - totalPayableMessage
+      properties:
+        vehicleDisplayname:
+          type: string
+          example: BMW X3
+        vehicleImage:
+          type: string
+          description: vehicle image url
+          example: https://vehicle-pictures-stage.goorange.sixt.com/5140195/ff0081/18_1.png
+        trip:
+          $ref: '#/components/schemas/TripSummary'
+        notification:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationItem'
+        rentalUrls:
+          $ref: '#/components/schemas/TermsAndConditionsUrls'
+        legalConsent:
+          type: string
+          description: Legal text with inline links in markdown format
+          example: 'By continuing, I confirm that I have read and accepted SIXT’s [Rental Information](https://www.sixt.com/php/terms/view?liso=US&rtar=000&view=EPP&tlang=en_US) and [Terms & Conditions](https://www.sixt.de/fileadmin/sys/agb/sixt_US_en.pdf).'
+        reservationId:
+          type: string
+          example: 9700478205
+        reservationResetTime:
+          $ref: '#/components/schemas/BlockDateTime'
+        payment:
+          $ref: '#/components/schemas/PaymentV3'
+        priceInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceInfoBlock'
+        totalPayableAmount:
+          $ref: '#/components/schemas/Amount'
+        totalPayableMessage:
+          type: string
+          example: 'You will not be charged until you return the vehicle'
+
+    PriceDetailResponse:
+      required:
+        - priceInfo
+      type: object
+      properties:
+        priceInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceInfoBlock'
+
+    PaymentV3:
+      type: object
+      properties:
+        profileId:
+          type: string
+          example: 93944684
+        corporateReferenceId:
+          type: string
+          example: 93944684
+        paymentInstrument:
+          $ref: '#/components/schemas/PaymentInstrumentV2'
+
+    PriceInfoBlock:
+      type: object
+      required:
+        - lineItems
+      properties:
+        title:
+          type: string
+          example: Rental fees
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceInfoLineItem'
+
+    PriceInfoLineItem:
+      type: object
+      required:
+        - key
+        - title
+        - costingType
+        - displayType
+      properties:
+        key:
+          type: string
+          description: Just an identifier for every line item in price info. Possible values are LINE_ITEM_TOTAL_AMOUNT, LINE_ITEM_SECURITY_DEPOSIT, LINE_ITEM_SECURITY_DEPOSIT_LEARN_MORE, LINE_ITEM_VEHICLE_UPGRADE etc.
+          example: MCI_P100_PAYMENT_RENTAL_FEE
+        displayType:
+          type: string
+          enum:
+            - DEFAULT
+            - HIGHLIGHTED
+            - LINK
+          example: DEFAULT
+          description: 'If a new enum value is added in future, older version of app should be able to map that new value to default one.'
+        title:
+          type: string
+          description: 'Vehicle Upgrade or Learn More in case of key LINE_ITEM_SECURITY_DEPOSIT_LEARN_MORE'
+          example: Your reservation
+        subtitles:
+          type: array
+          items:
+            type: string
+          description: '6 x $82 /day, 10% discount applied, $0 financial responsibility OR Security Deposit, A security deposit placed on your vehicle in case of key LINE_ITEM_SECURITY_DEPOSIT_LEARN_MORE'
+          example: ["5 x 66.16 $ /day", "10% discount applied", "$0 financial responsibility"]
+        displayPrice:
+          $ref: '#/components/schemas/Amount'
+        listPrice:
+          description: 'It should be null if no discount is applied'
+          $ref: '#/components/schemas/Amount'
+        costingType:
+          type: string
+          enum:
+            - ALREADY_CHARGED
+            - INCLUDED
+            - ADDITIONAL
+            - DEDUCT
+          description: 'If a new enum value is added in future, older version of app should be able to map that new value to default one which is ALREADY_CHARGED.'
+
+    TripSummary:
+      type: object
+      required:
+        - pickupBranch
+        - returnBranch
+        - pickupTime
+        - returnTime
+        - rentalDays
+      properties:
+        pickupBranch:
+          type: string
+          example: Miami International Airport
+        returnBranch:
+          type: string
+          example: Miami International Airport
+        pickupTime:
+          $ref: '#/components/schemas/BlockDateTime'
+        returnTime:
+          $ref: '#/components/schemas/BlockDateTime'
+        rentalDays:
+          type: integer
+          example: 5
+
+    UpdateCorporateDetailsRequest:
+      type: object
+      properties:
+        corporateTaxId:
+          $ref: '#/components/schemas/CorporateTaxId'
+      description: UpdateCorporateDetailsRequest represents the request payload for
+        updating a reservation with user details.
+    CorporateDetails:
+      type: object
+      properties:
+        companyName:
+          type: string
+          example: LCT SPA
+        corporateTaxId:
+          $ref: '#/components/schemas/CorporateTaxId'
+      description: Corporate details object
+    CorporateTaxId:
+      type: string
+      example: "123456789"
+    UpdateCorporateDetailsResponse:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+          description: boolean value that confirms if update was successful or not
+            in rental-activity.
+          example: false
+    UpdateUserDetailsResponse:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+          description: boolean value that confirms if update was successful or not
+            in rental-activity.
+          example: false
+    UpdateUserDetailsRequest:
+      type: object
+      properties:
+        updateRequiredUserDetailsParams:
+          $ref: '#/components/schemas/UpdateRequiredUserDetailsParams'
+        driverInfo:
+          $ref: '#/components/schemas/DriverInfo'
+      description: UpdateBookingDetailsRequest represents the request payload for
+        updating a reservation with user details.
+    UpdateRequiredUserDetailsParams:
+      required:
+        - isIDCardDetailsUpdated
+        - isResidentialAddressUpdated
+        - isTaxIdUpdated
+        - isDvlaDetailsUpdated
+      type: object
+      properties:
+        isResidentialAddressUpdated:
+          type: boolean
+          description: if true backend will update the residential address feild present
+            in the request to RA.
+          example: false
+        isIDCardDetailsUpdated:
+          type: boolean
+          description: if true backend will update all the feilds of ID card present
+            in the request to RA.
+          example: false
+        isTaxIdUpdated:
+          type: boolean
+          description: if true backend will update the tax ID present in the request
+            to RA.
+          example: false
+        isDvlaDetailsUpdated:
+          type: boolean
+          default: false
+          description: if true backend will update the dvla code present in the request
+            to RA.
+          example: false
+    UserDetailsResponse:
+      type: object
+      properties:
+        rentalActivityId:
+          type: string
+          description: the id of the rental-activity
+          example: "1001987478"
+        isResidentialAddressNeeded:
+          type: boolean
+          description: if true front-end needs to call residential address update,if
+            false front-end should skip it and call payment page.
+          example: false
+        isIDCardDetailsNeeded:
+          type: boolean
+          description: if true front-end needs to call ID Card update,if false front-end
+            should skip it and call payment page.
+          example: false
+        driverInfo:
+          $ref: '#/components/schemas/DriverInfo'
+    DriverInfo:
+      type: object
+      properties:
+        passport:
+          $ref: '#/components/schemas/PassportOrIDCardDetails'
+        taxId:
+          type: string
+          example: "123456789"
+        otherAddressInfo:
+          type: string
+          example: Xpress,SIXT R&D Pvt Ltd,Floor 6,Cessna Business Park,Namma Bengaluru
+        firstName:
+          type: string
+          example: xyz
+        lastName:
+          type: string
+          example: 'xyz'
+        dvlaDetail:
+          $ref: '#/components/schemas/DvlaDetails'
+      description: Driver info object
+    DvlaDetails:
+      type: object
+      properties:
+        dvlaCode:
+          type: string
+          example: 'rGJ7m2nq'
+        penaltyPoint:
+          type: string
+          example: '5'
+    PassportOrIDCardDetails:
+      type: object
+      properties:
+        idNumber:
+          type: string
+          example: AF 2637468
+        dateOfIssue:
+          type: string
+          description: the date of the passport issue.
+          format: date
+          example: 2023-03-27
+        issuingCountryCode:
+          pattern: ^.{2}$
+          type: string
+          example: ES
+    PrepareResponse:
+      required:
+        - rentalActivityId
+      type: object
+      properties:
+        rentalActivityId:
+          type: string
+    VehicleSelectionResponse:
+      required:
+        - configurationId
+        - deals
+        - filter
+        - hasWinterTyreWarning
+        - internalIds
+      type: object
+      properties:
+        internalIds:
+          $ref: '#/components/schemas/IDs'
+        configurationId:
+          type: string
+        deals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Deal'
+        bannerMessage:
+          type: string
+        bottomPopUpMessage:
+          type: string
+          description: In case of the branch is going to close in less than 2 hours
+            and greater than 1 hour. the BE sends a message (i.e. Branch will be closing
+            in XX mins ensure you pick up key before branch closes).
+        blockedDealVehicle:
+          $ref: '#/components/schemas/Deal'
+        blockDateTime:
+          $ref: '#/components/schemas/BlockDateTime'
+        filter:
+          $ref: '#/components/schemas/Filter'
+        hasWinterTyreWarning:
+          type: boolean
+          description: returns true if there is winter season for particular pickup
+            branch.
+        winterTyreMessage:
+          type: string
+          description: This vehicle is equipped with summer tires. Vehicle may not
+            be used under Winter road conditions (ice, snow, clear, ice, packed show,
+            snow, slush etc.). Do you still confirm to take the vehicle?
+    VehicleListResponseV2:
+      required:
+        - deals
+        - reservationId
+      type: object
+      properties:
+        reservationId:
+          description: Reservation ID, rental activity ID for the booking
+          type: string
+        deals:
+          type: array
+          items:
+            $ref: '#/components/schemas/DealV2'
+        totalVehicles:
+          description: Field will have the total number of vehicles available which the user can browse through.
+          type: integer
+          format: int32
+        bannerMessage:
+          type: object
+          $ref: '#/components/schemas/Message'
+        bottomPopUpMessage:
+          type: string
+          description: In case of the branch is going to close in less than 2 hours
+            and greater than 1 hour. the BE sends a message (i.e. Branch will be closing
+            in XX mins ensure you pick up key before branch closes).
+        blockedDealVehicle:
+          $ref: '#/components/schemas/DealV2'
+        reservationBlockDateTime:
+          $ref: '#/components/schemas/BlockDateTime'
+        filter:
+          description: to be sent in case of all vehicles only, as L1 will not have this section.
+          $ref: '#/components/schemas/Filter'
+        quickFilters:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuickFilter'
+        terminalList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Terminal'
+        vehicleLessCheckin:
+          $ref: '#/components/schemas/VehicleLessCheckin'
+
+    VehicleLessCheckin:
+      type: object
+      required:
+        - title
+        - description
+        - imageUrl
+      properties:
+        title:
+          type: string
+          example: We are getting your booked vehicle ready
+        description:
+          type: string
+          example: Please continue your check-in to save time at pickup and get your key directly at the counter.
+        imageUrl:
+          type: string
+          example: https://img.sixt.com/800/1537003e-d070-4d0f-a8b8-31fc0ce5b570.png
+
+    SMSConsentResponse:
+      type: object
+      properties:
+        mobileNumber:
+          type: string
+          description: the mobile-number already present in rental-activity
+          example: +9107*******65
+        isSMSOpted:
+          type: boolean
+          description: determines if SMS consent is given or not.
+          example: false
+    Deal:
+      required:
+        - dealInfo
+        - vehicle
+      type: object
+      properties:
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        pricing:
+          $ref: '#/components/schemas/PriceInfo'
+        dealInfo:
+          $ref: '#/components/schemas/DealInfo'
+    Vehicle:
+      required:
+        - attributeCategories
+        - attributeSummary
+        - bagsCount
+        - color
+        - fuelType
+        - id
+        - images
+        - make
+        - model
+        - passengersCount
+        - transmissionType
+        - tyreType
+      type: object
+      properties:
+        id:
+          type: string
+        acriss:
+          type: string
+        licensePlate:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        color:
+          type: string
+        drivenMileage:
+          type: integer
+          description: the number of miles the car has driven. [Optional] this field
+            should be presented only in case of it is presented on the vehicle card.
+          format: int32
+          example: 50
+        carAge:
+          type: integer
+          description: the age of the car in days. [Optional] this field should be
+            presented only in case of it is presented on the vehicle card.
+          format: int32
+          example: 45
+        images:
+          type: array
+          items:
+            type: string
+        attributeSummary:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attribute'
+        attributeCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeCategory'
+        secondaryFilterAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecondaryFilterAttribute'
+        bagsCount:
+          type: integer
+          format: uint32
+        passengersCount:
+          type: integer
+          format: uint32
+        groupType:
+          $ref: '#/components/schemas/GroupType'
+        tyreType:
+          type: string
+          description: Possible values winter, summer. If the vehicle is equipped
+            with winter tyres, return winter else summer.
+        transmissionType:
+          type: string
+          description: Possible values Automatic, Manual.
+        fuelType:
+          type: string
+          description: Possible values Electric, Petrol, Diesel, Hybrid.
+
+    AttributeCategory:
+      required:
+        - attributes
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attribute'
+
+    Attribute:
+      required:
+        - icon
+        - value
+      type: object
+      properties:
+        icon:
+          type: string
+        value:
+          type: string
+
+
+    DealV2:
+      required:
+        - dealInfo
+        - vehicle
+      type: object
+      properties:
+        vehicle:
+          $ref: '#/components/schemas/VehicleV2'
+        pricing:
+          $ref: '#/components/schemas/PriceV2'
+        dealInfo:
+          type: string
+          description: the field will denote what type of deal possible values
+            BOOKED_CATEGORY,
+            DISCOUNT,
+            COMPLIMENTARY,
+            GUARANTEED_MODEL
+
+        tags:
+          description: in case of tags to be shown for the vehicle card eg- new vehicle, recommended etc.
+          type: array
+          items:
+            type: string
+
+    VehicleV2:
+      required:
+        - bagsCount
+        - fuelType
+        - id
+        - images
+        - brand
+        - model
+        - transmissionType
+        - tyreType
+      type: object
+      properties:
+        id:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        acrissCode:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        bagsCount:
+          type: integer
+          format: uint32
+        passengersCount:
+          type: integer
+          format: uint32
+        groupType:
+          type: string
+        tyreType:
+          type: string
+          description: Possible values winter, summer. If the vehicle is equipped
+            with winter tyres, return winter else summer.
+        transmissionType:
+          type: string
+          description: Possible values Automatic, Manual.
+        fuelType:
+          type: string
+          description: Possible values Electric, Petrol, Diesel, Hybrid.
+
+        isNewCar:
+          description: to be used for quick filters
+            if the car is driven under x kms/miles
+          type: boolean
+        isRecommended:
+          description: to be used for quick filters,
+            in case the vehicle is to be more likely to be upsold
+          type: boolean
+        isMoreLuxury:
+          description: to be used for quick filters,
+            in case the vehicle is more luxury than booked category
+          type: boolean
+        isExcitingDiscount:
+          description: to be used for quick filters,
+            in case the vehicle is more discounted than the config
+          type: boolean
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeV2'
+        vehicleStatus:
+          type: string
+          enum:
+            - UNKNOWN
+            - AVAILABLE
+            - BLOCKED
+            - RESERVED
+          description: vehicle status, which can be used in the block vehicle to indicate if the vehicle is blocked or reserved.
+
+
+    VehicleAttributeResponse:
+      required:
+        - detailAttributes
+      type: object
+      properties:
+        make:
+          type: string
+        model:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        groupType:
+          $ref: '#/components/schemas/GroupType'
+        pricing:
+          $ref: '#/components/schemas/PriceV2'
+        dealInfo:
+          type: string
+          description: the field will denote what type of deal possible values
+            BOOKED_CATEGORY,
+            DISCOUNT,
+            COMPLIMENTARY,
+            GUARANTEED_MODEL
+        cardAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeV2'
+        detailAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeCategoryV2'
+        totalPayableAmount:
+          $ref: '#/components/schemas/Amount'
+        reservationBlockDateTime:
+          $ref: '#/components/schemas/BlockDateTime'
+        winterTyreMessage:
+          type: object
+          $ref: '#/components/schemas/Message'
+          description: This vehicle is equipped with summer tires. Vehicle may not
+            be used under Winter road conditions (ice, snow, clear, ice, packed show,
+            snow, slush etc.). Do you still confirm to take the vehicle?
+
+    Message:
+      required:
+        - title
+        - message
+      type: object
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+
+    AttributeV2:
+      type: object
+      properties:
+        key:
+          type: string
+        title:
+          type: string
+        value:
+          type: string
+        attributeType:
+          type: string
+          description: used to differentiate between types of attributes shown on vehicle card,
+            possible  value
+            CARD_ATTRIBUTE,
+            UPSELL_ATTRIBUTE,
+            DETAILED_ATTRIBUTE
+
+    AttributeCategoryV2:
+      required:
+        - attributes
+        - name
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeV2'
+
+    Price:
+      required:
+        - currency
+        - displayPrice
+        - gross
+        - net
+        - taxAmount
+        - taxRate
+      type: object
+      properties:
+        currency:
+          type: string
+        net:
+          type: number
+          format: double
+        gross:
+          type: number
+          format: double
+        taxAmount:
+          type: number
+          format: double
+        taxRate:
+          type: number
+          format: double
+        displayPrice:
+          $ref: '#/components/schemas/DisplayPrice'
+    LocalizedPriceMap:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/LocalizedPrice'
+    LocalizedPrice:
+      required:
+        - listPrice
+        - price
+      type: object
+      properties:
+        price:
+          $ref: '#/components/schemas/Price'
+        listPrice:
+          $ref: '#/components/schemas/Price'
+    DisplayPrice:
+      required:
+        - amount
+        - isTaxIncluded
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        isTaxIncluded:
+          type: boolean
+    AppliedDiscount:
+      type: object
+      properties:
+        type:
+          type: string
+        percentage:
+          type: integer
+          format: int32
+    DealInfo:
+      type: object
+      properties:
+        type:
+          type: string
+          description: |-
+            Probable values are
+             - BOOKED_CATEGORY
+             - DISCOUNT
+             - COMPLIMENTARY
+             - GUARANTEED_MODEL
+
+    QuickFilter :
+      type: object
+      properties:
+        key:
+          type: string
+        title:
+          description: text to be displayed for quick filters eg,
+            Recommended, More Space, Luxury, Automatic etc.
+          type: string
+        selectType:
+          description: to identify the behaviour, if this filter would be single select or multiSelect
+          type: string
+
+
+
+    Filter:
+      required:
+        - brands
+        - fuelTypes
+        - transmissionTypes
+      type: object
+      properties:
+        brands:
+          type: array
+          items:
+            type: string
+        transmissionTypes:
+          type: array
+          items:
+            type: string
+        fuelTypes:
+          type: array
+          items:
+            type: string
+    GroupType:
+      type: object
+      properties:
+        type:
+          type: string
+          description: |-
+            Probable values are
+             SMALL_SEDAN
+             SEDAN
+             SUV
+             SPECIAL_SEDAN
+             LUXURY_SEDAN
+             ELECTRIC_SEDAN
+             SPECIAL_HYBRID_SEDAN
+             SPECIAL_SUV
+             SPECIAL_COUPE
+             LUXURY_COUPE
+             MIDSIZE_SUV
+             LUXURY_SUV
+             CONVERTIBLE
+             SPECIAL_CONVERTIBLE
+             LUXURY_CONVERTIBLE
+             MINI_VAN
+             VAN
+             PICKUP_TRUCKS
+             PREMIUM_COUPE
+             FULL_SIZE_SUV
+             LARGE_LUXURY_SUV
+             LARGE_LUXURY_SEDAN
+             HATCHBACK
+    SecondaryFilterAttribute:
+      required:
+        - icon
+        - name
+      type: object
+      properties:
+        icon:
+          type: string
+        name:
+          type: string
+    Actions:
+      required:
+        - updateReservation
+      type: object
+      properties:
+        updateReservation:
+          type: boolean
+          description: tells whether to update a reservation is possible or not
+    BlockVehicleRequest:
+      required:
+        - configurationId
+        - vehicleId
+      type: object
+      properties:
+        configurationId:
+          type: string
+          description: the id for this upsell configuration. This is a UUID
+          example: 233888243-34fa-12d3-a456-426784174422
+        vehicleId:
+          type: string
+          description: the id of the vehicle to block. This is the vehicle ID
+          example: 1234-abc-121
+      description: BlockVehicleRequest represents the request payload for blocking
+        a vehicle to a rental activity
+    Charge:
+      required:
+        - description
+        - iconUrl
+        - id
+        - isEnabled
+        - isIncluded
+        - maxQuantity
+        - name
+        - pricing
+        - quantity
+        - type
+      type: object
+      properties:
+        description:
+          type: string
+          description: a translated description of the charge
+          example: Everyone loves to drive our cars! Add a friend and hit the road
+        iconUrl:
+          type: string
+          description: the icon URL for this charge
+          example: https://cdn.sixt.io/extras/{density}/ico_personplusbig.png
+        id:
+          type: string
+          description: the charge code, In case of the charge is a chargeOption, the
+            id for the default chargeOption will be exported from the BE in this format
+            xyz-none so that the front-end can check if the id is in the format of
+            xyz-none, then it is the default chargeOption, otherwise it is a normal
+            id.
+          example: AD
+        isEnabled:
+          type: boolean
+          description: when false, this charge should not be displayed
+          example: true
+        isIncluded:
+          type: boolean
+          description: When true, it indicates that this charge was included as part
+            of the rate rather than explicit selection (and therefore cannot be modified)
+          example: true
+        maxQuantity:
+          type: integer
+          description: the maximum number of pieces which can be booked. The default
+            value will be one
+          format: int32
+          example: 4
+        name:
+          type: string
+          description: the translated name of the charge
+          example: Additional Driver
+        pricing:
+          $ref: '#/components/schemas/Pricing'
+        quantity:
+          type: integer
+          description: number of pieces currently selected. Zero indicates that it
+            is not selected
+          format: int32
+          example: 1
+        type:
+          type: string
+          description: the charge type, used for grouping charges together
+          example: protection|seats|winter|other
+        details:
+          type: array
+          description: translated details about charge splitted as paragraphs
+          items:
+            type: string
+        infoText:
+          type: string
+          description: On Selecting the charge informtaion text to be displayed in
+            case required
+          example: Additonal driver verification will be done at the counter.
+        chargeOptions:
+          type: array
+          description: List of charge options for single protection.
+          example: Charge options under Loss Damage Waiver protection (e.g., Liable
+            to pay upto EUR 950, Liable to pay upto EUR 450 and Full Protection).
+          items:
+            $ref: '#/components/schemas/Charge'
+        recommendationTag:
+          type: string
+          description: will contain the recommendation tag label if that protection
+            package is recommended for user if it is configured in SF, otherwise should
+            be NULL
+          example: Recommended for you
+        nudgeProtection:
+          type: boolean
+          description: will specify if this protection should be nudge to user if
+            he hasnt selected anything. Controlled by SF configs, if configs are not
+            present, first protection in the list will be the default one
+        protectionPackagesCharges:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargeDetail'
+    ChargeGroup:
+      required:
+        - items
+      type: object
+      properties:
+        name:
+          type: string
+          description: the translated name of the charge group. Optional if should
+            be stated without group
+          example: Child seats
+        items:
+          type: array
+          description: list of charges in this group
+          items:
+            $ref: '#/components/schemas/Charge'
+    ChargeRequest:
+      required:
+        - id
+        - quantity
+      type: object
+      properties:
+        id:
+          type: string
+          description: the id of the charge (a.k.a. charge code)
+          example: LD
+        quantity:
+          type: integer
+          description: the number of pieces to select
+          format: int64
+          example: 4
+    Discount:
+      required:
+        - percentage
+        - type
+      type: object
+      properties:
+        percentage:
+          type: integer
+          description: the percentage of discount applied
+          format: uint32
+          example: 15
+        type:
+          type: string
+          description: the type of discount applied
+          example: STANDARD
+    HttpError:
+      type: object
+      properties:
+        data:
+          type: object
+          properties: { }
+          description: interface for adding additional information with arbitary format
+        errorCode:
+          type: string
+          description: the unique error code  (e.g. 'user_not_found')
+        message:
+          type: string
+          description: human readable error message (e.g. 'The requested user could
+            not be found')
+        retriable:
+          type: boolean
+          description: indicates if the client might perform a retry for the request
+            causing the error
+        title:
+          type: string
+          description: human readable error title (e.g. 'Not Found')
+        raStatus:
+          type: string
+          description: tells the current status of RA (e.g. 'RA_CHECKOUT','RA_PAYMENT')
+    Location:
+      required:
+        - branchId
+        - branchName
+        - countryCode
+      type: object
+      properties:
+        branchId:
+          type: string
+          description: the location id
+          example: "11"
+        branchName:
+          type: string
+          description: the location name
+          example: Munich Airport
+        countryCode:
+          type: string
+          description: countryCode of the Address, Ex:- DE, NL, IN
+          example: DE
+    PreviewUpdateBookingRequest:
+      type: object
+      properties:
+        charges:
+          type: array
+          description: the charges to select/deselect
+          items:
+            $ref: '#/components/schemas/ChargeRequest'
+        currency:
+          pattern: ^.{3}$
+          type: string
+          description: the ISO currency code if conversion is desired
+          example: EUR
+      description: PreviewUpdateReservationRequest represents the request payload
+        for updating a reservation
+    Pricing:
+      required:
+        - listPrice
+        - price
+      type: object
+      properties:
+        appliedDiscount:
+          $ref: '#/components/schemas/Discount'
+        listPrice:
+          $ref: '#/components/schemas/Price'
+        localizedPrices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LocalizedPrice'
+          description: a map of currency code to converted price
+        price:
+          $ref: '#/components/schemas/Price'
+        prefix:
+          type: string
+          description: a prefix which can be displayed before the price
+          example: add
+        suffix:
+          type: string
+          description: a suffix which can be displayed after the price
+          example: more
+        tracking:
+          $ref: '#/components/schemas/TrackingPrice'
+        unit:
+          type: string
+          description: the timespan for which the price is applied
+          example: day
+        messageInfo:
+          type: string
+          description: a placeholder for displaying additional info like refundable
+            deposit message
+          example: refundable deposit info button
+
+    PriceV2:
+      required:
+        - displayPrice
+      type: object
+      properties:
+        discountPercentage:
+          type: integer
+          description: the percentage of discount applied
+          format: uint32
+          example: 15
+        displayPrice:
+          $ref: '#/components/schemas/PriceDetails'
+        listPrice:
+          $ref: '#/components/schemas/PriceDetails'
+        totalPrice:
+          $ref: '#/components/schemas/PriceDetails'
+
+
+    PriceDetails:
+      required:
+        - currency
+        - amount
+      type: object
+      properties:
+        currency:
+          type: string
+          description: the ISO currency code
+          example: USD
+        amount:
+          description: eg 12.55
+          type: number
+          format: double
+        prefix:
+          type: string
+          description: a prefix which can be displayed before the price
+          example: add
+        suffix:
+          type: string
+          description: a suffix which can be displayed after the price
+          example: /day
+
+
+    TrackingPrice:
+      required:
+        - currency
+        - gross
+        - net
+      type: object
+      properties:
+        currency:
+          type: string
+          description: the ISO currency code
+          example: USD
+        gross:
+          type: number
+          description: the gross price (with tax)
+          format: double
+        net:
+          type: number
+          description: the net price (without tax)
+          format: double
+          example: 12.34
+    Trip:
+      required:
+        - pickupBranch
+        - pickupDateTime
+        - pickupTimeZone
+        - returnBranch
+        - returnDateTime
+        - returnTimeZone
+      type: object
+      properties:
+        pickupBranch:
+          $ref: '#/components/schemas/Location'
+        pickupDateTime:
+          type: string
+          description: the date time of the pickup with timezone
+          format: date-time
+          example: 2021-07-30T10:00:00+02:00
+        pickupTimeZone:
+          type: string
+          example: America/New_York
+        returnBranch:
+          $ref: '#/components/schemas/Location'
+        returnDateTime:
+          type: string
+          description: the date time of the return with timezone
+          format: date-time
+          example: 2021-07-30T10:00:00+02:00
+        returnTimeZone:
+          type: string
+          example: America/New_York
+    UpdateBookingRequest:
+      type: object
+      properties:
+        charges:
+          type: array
+          description: the charges to select/deselect
+          items:
+            $ref: '#/components/schemas/ChargeRequest'
+        currency:
+          pattern: ^.{3}$
+          type: string
+          description: the ISO currency code if conversion is desired
+          example: EUR
+      description: UpdateReservationRequest represents the request payload for updating
+        a reservation
+
+    UpdateOfferConfigurationRequest:
+      required:
+        - charges
+      type: object
+      properties:
+        charges:
+          type: array
+          description: the charges to select/deselect
+          items:
+            $ref: '#/components/schemas/ChargeRequest'
+      description: UpdateOfferConfigurationRequest represents the request payload for updating a reservation
+
+    EntryResponse:
+      required:
+        - documentationStatus
+        - id
+        - imageUrl
+        - instructionList
+        - internalIds
+        - title
+        - trip
+        - usecase
+      type: object
+      properties:
+        internalIds:
+          $ref: '#/components/schemas/IDs'
+        title:
+          type: string
+        subTitle:
+          type: string
+        id:
+          type: string
+        imageUrl:
+          type: string
+        priceInfo:
+          $ref: '#/components/schemas/PriceInfo'
+        trip:
+          $ref: '#/components/schemas/Trip'
+        usecase:
+          $ref: '#/components/schemas/EntryUsecase'
+        documentationStatus:
+          $ref: '#/components/schemas/DocumentationStatus'
+        instructionList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Step'
+        terminalList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Terminal'
+        actions:
+          type: array
+          items:
+            type: string
+            default: DEFAULT_PARAMS
+            enum:
+              - DVLA
+              - DEFAULT_PARAMS
+      description: Response object of the entry API
+    OnBoardMCIResponse:
+      type: object
+      properties:
+        pickupBranchId:
+          type: string
+        pickupCountryCode:
+          type: string
+        actions:
+          type: array
+          items:
+            type: string
+            default: DEFAULT_PARAMS
+            enum:
+              - DVLA
+              - DEFAULT_PARAMS
+        terminalInformation:
+          $ref: '#/components/schemas/TerminalInfo'
+      description: Response object of the entry API V2
+    EntryUsecase:
+      required:
+        - value
+      type: object
+      properties:
+        value:
+          type: string
+          description: vehicle_selection_not_available should be passed in case no
+            other use case fits
+          example: vehicle_selection_available|time_passed|multiple_active_rentals|age_restriction|long_term|vehicle_selection_not_available|new_user|branch_closed|branch_closing|invalid_corporate_customer|unlimited_corporate_customer
+        title:
+          type: string
+          example: More than 1 active rental
+        message:
+          type: string
+          example: You already have an active rental with booking ID 7657823
+    Contact:
+      required:
+        - phone
+      type: object
+      properties:
+        phone:
+          type: string
+          description: Hotline phone number
+    DocumentationStatus:
+      required:
+        - documentationStatus
+        - membershipAgreementAgreed
+        - usecase
+      type: object
+      properties:
+        usecase:
+          type: string
+          description: |2-
+             To be deprecated
+             Probable values are
+             - completed
+             - not_completed
+             - failed
+             - missed
+             - fraud
+             - additional_driver_details_missed
+        message:
+          type: string
+        documentationStatus:
+          type: string
+          description: |-
+            Probable values are
+             - completed
+             - not_completed
+             - failed
+             - fraud
+        membershipAgreementAgreed:
+          type: boolean
+          description: |-
+            boolean field to indicate
+             the user have accepted the membershipAgreement
+    Step:
+      required:
+        - subtitle
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+      description: No need for index property as app will make indexes from the items
+        order in instructions list
+    Terminal:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      description: Terminal Information
+    TerminalInfo:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        terminalList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Terminal'
+
+    PriceInfo:
+      required:
+        - totalPrice
+      type: object
+      properties:
+        totalPrice:
+          $ref: '#/components/schemas/Pricing'
+        deposit:
+          $ref: '#/components/schemas/Pricing'
+        priceBreakdown:
+          $ref: '#/components/schemas/PriceBreakdown'
+        blockedAmount:
+          $ref: '#/components/schemas/Pricing'
+        discount:
+          $ref: '#/components/schemas/Pricing'
+        priceBreakdownSummary:
+          type: array
+          description: Same price information object as breakdown but here parent
+            object to be of time single and not items in array
+          items:
+            $ref: '#/components/schemas/BillingSection'
+        totalPayablePrice:
+          $ref: '#/components/schemas/Pricing'
+    PriceBreakdown:
+      required:
+        - billingSections
+      type: object
+      properties:
+        billingSections:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillingSection'
+        infoMessage:
+          type: string
+          example: We will put a hold of $742 on your credit card and you will be
+            charged once you return the car.
+    BillingSection:
+      required:
+        - reference
+        - type
+      type: object
+      properties:
+        pricing:
+          $ref: '#/components/schemas/Pricing'
+        title:
+          type: string
+          description: Title can be Fees or Rental Details (localised)
+        type:
+          type: string
+          description: options can be group | single . Group for parent level, single
+            for childs
+        reference:
+          type: string
+          description: options can be fees | rental | additional_driver_fee | refundable_deposit
+            etc
+        infos:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillingSection'
+        explanation:
+          type: string
+          example: A refundable deposit is a security while you have our car. We refund
+            the deposit 7 days after you return the car without any delays, damages
+            or traffic violations
+    AuthorizePaymentResponse:
+      required:
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+    PaymentResponse:
+      required:
+        - blockedVehicle
+        - internalIds
+        - priceInfo
+        - termsAndConditionsUrls
+        - totalPayableMessage
+        - vehicleBlockDateTime
+      type: object
+      properties:
+        internalIds:
+          $ref: '#/components/schemas/IDs'
+        priceInfo:
+          $ref: '#/components/schemas/PriceInfo'
+        blockedVehicle:
+          $ref: '#/components/schemas/Vehicle'
+        vehicleBlockDateTime:
+          $ref: '#/components/schemas/VehicleBlockDateTime'
+        payment:
+          $ref: '#/components/schemas/Payment'
+        customerSupport:
+          $ref: '#/components/schemas/Contact'
+        termsAndConditionsUrls:
+          $ref: '#/components/schemas/TermsAndConditionsUrls'
+        includedCharges:
+          type: array
+          items:
+            type: string
+        includedOffersDetails:
+          $ref: '#/components/schemas/IncludedOffersDetails'
+        corporateDetails:
+          $ref: '#/components/schemas/CorporateDetails'
+        errorMessage:
+          type: string
+          example: Additional driver verification will be done at the counter
+        cardChangeMessage:
+          type: string
+          example: Changing card, will initiate complete payment on new card. Prepaid
+            amount will be refunded on card XXX1234
+        totalPayableMessage:
+          type: string
+          description: should contain corresponding and formatted currency
+          example: You won’t be charged until you return the vehicle. We will authorize
+            a total of $100 refundable deposit on your card.
+        taxId:
+          type: string
+          example: NXXXXXXXXXXXXXXF
+        flags:
+          type: array
+          items:
+            type: string
+            description: Possible values - CARD_CHANGE_NOT_ALLOWED (UI won't show
+              edit card option), PAYMENT_NOT_ALLOWED (UI will show CTA button as Proceed
+              at counter)
+        notification:
+          $ref: '#/components/schemas/NotificationItem'
+    PaymentResponseV2:
+      required:
+        - blockedVehicle
+        - internalIds
+        - priceInfo
+        - termsAndConditionsUrls
+        - totalPayableMessage
+        - vehicleBlockDateTime
+      type: object
+      properties:
+        internalIds:
+          $ref: '#/components/schemas/IDs'
+        priceInfo:
+          $ref: '#/components/schemas/PriceInfo'
+        blockedVehicle:
+          $ref: '#/components/schemas/Vehicle'
+        vehicleBlockDateTime:
+          $ref: '#/components/schemas/VehicleBlockDateTime'
+        payment:
+          $ref: '#/components/schemas/PaymentV2'
+        customerSupport:
+          $ref: '#/components/schemas/Contact'
+        termsAndConditionsUrls:
+          $ref: '#/components/schemas/TermsAndConditionsUrls'
+        includedCharges:
+          type: array
+          items:
+            type: string
+        includedOffersDetails:
+          $ref: '#/components/schemas/IncludedOffersDetails'
+        corporateDetails:
+          $ref: '#/components/schemas/CorporateDetails'
+        errorMessage:
+          type: string
+          example: Additional driver verification will be done at the counter
+        cardChangeMessage:
+          type: string
+          example: Changing card, will initiate complete payment on new card. Prepaid
+            amount will be refunded on XXX1234 card
+        totalPayableMessage:
+          type: string
+          description: should contain corresponding and formatted currency
+          example: You won’t be charged until you return the vehicle. We will authorize
+            a total of $100 refundable deposit on your card.
+        taxId:
+          type: string
+          example: NXXXXXXXXXXXXXXF
+        flags:
+          type: array
+          items:
+            type: string
+            description: Possible values - CARD_CHANGE_NOT_ALLOWED (UI won't show
+              edit card option), PAYMENT_NOT_ALLOWED (UI will show CTA button as Proceed
+              at counter)
+        notification:
+          $ref: '#/components/schemas/NotificationItem'
+    NotificationItem:
+      type: object
+      properties:
+        category:
+          type: string
+          description: |-
+            Probable values are
+             - ALERT
+             - WARNING.
+          example: WARNING
+        message:
+          type: string
+          description: Possible values - Only credit card accepted for this rental,
+            Additional driver verification will be done at the counter
+          example: Changing card, will initiate complete payment on new card. Prepaid amount will be refunded on card **** **** **** *311
+        reason:
+          type: string
+          description: |-
+            Probable values are
+             - DEBIT_CARD_NOT_SUPPORTED(Handles LOCAL_USER and PLXG Checks)
+             - PAYMENT_NOT_ALLOWED(UI will show CTA button as Proceed at counter).
+             - CARD_CHANGE/ALTERNATE_PAYMENT_METHOD for prepaid refund message in case user tries to change card. CARD_CHANGE will be deprecated once mweb adopts new reason, so map only ALTERNATE_PAYMENT_METHOD
+             - CARD_CHANGE_NOT_ALLOWED 
+             - CARD_DETAILS_NOT_NEEDED for AGENCY_FULL_CREDIT booking.
+             - CHANGE_PAYMENT_METHOD
+          example: CARD_CHANGE
+    TermsAndConditionsUrls:
+      required:
+        - rentalInfo
+        - termsAndConditions
+      type: object
+      properties:
+        rentalInfo:
+          type: string
+          example: https://www.sixt.com/php/terms/view?liso=US&rtar=000&view=EPP&tlang=en_US
+        termsAndConditions:
+          type: string
+          example: https://www.sixt.de/fileadmin/sys/agb/sixt_US_en.pdf
+    Payment:
+      required:
+        - paymentInstrument
+      type: object
+      properties:
+        errorMessage:
+          type: string
+        profileId:
+          type: string
+        corporateReferenceId:
+          type: string
+        paymentInstrument:
+          $ref: '#/components/schemas/PaymentInstrument'
+
+    PaymentV2:
+      required:
+        - paymentInstrument
+      type: object
+      properties:
+        errorMessage:
+          type: string
+        profileId:
+          type: string
+        corporateReferenceId:
+          type: string
+        paymentInstrument:
+          $ref: '#/components/schemas/PaymentInstrumentV2'
+
+
+    PaymentInstrument:
+      required:
+        - paymentMethod
+        - paymentSystem
+        - publicNumber
+        - token
+      type: object
+      properties:
+        id:
+          type: string
+        publicNumber:
+          type: string
+        token:
+          type: string
+        validityDateMonth:
+          type: integer
+          format: int32
+        validityDateYear:
+          type: integer
+          format: int32
+        paymentMethod:
+          type: string
+          description: |-
+            Probable values are
+             - CREDIT_CARD
+             - SIXT_CORPORATE_CARD
+             - VIRTUAL_CORPORATE_CARD_AIRPLUS
+             - DIRECT_DEBIT
+             - OTHER
+        paymentSystem:
+          type: string
+          description: |-
+            Probable values are
+             - AMERICAN_EXPRESS
+             - DINERS_CLUB
+             - DISCOVER
+             - JCB
+             - MASTER_CARD
+             - VISA
+             - AIR_PLUS
+             - SIXT_CORPORATE_CARD_UNLIMITED
+    PaymentInstrumentV2:
+      required:
+        - name
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: '**** **** **** *311'
+        type:
+          type: string
+          description: |-
+            Probable values are
+             - SEPA
+             - CARD
+             - PAYPAL
+          example: CARD
+        cardType:
+          type: string
+          description: |-
+            Probable values are
+             - DEBIT
+             - CREDIT
+             - CHARGE
+          example: CREDIT_CARD
+        cardBrand:
+          type: string
+          description: |-
+            Probable values are
+             - CARD_BRAND_UNDEFINED
+             - VISA
+             - MASTERCARD
+             - AMEX
+             - DINERS
+             - JCB
+             - DISCOVER
+             - AIRPLUS
+             - MAESTRO
+             - VPAY
+             - CUP
+          example: MASTER_CARD
+        status:
+          type: string
+          description: |
+            Probable values are
+             - ACTIVE
+             - BLOCKED
+             - EXPIRED
+             - DELETED
+             - ARCHIVED
+          example: ACTIVE
+        token:
+          type: string
+          example: 520128QkBPadP311
+        expirationMonth:
+          type: integer
+          format: int32
+          example: 3
+        expirationYear:
+          type: integer
+          format: int32
+          example: 2030
+    AuthorizePaymentRequest:
+      type: object
+      properties:
+        paymentInstrumentId:
+          type: string
+        paymentInstrument:
+          $ref: '#/components/schemas/PaymentInstrumentInfo'
+        threeDS:
+          $ref: '#/components/schemas/ThreeDS'
+        threeDSParams:
+          $ref: '#/components/schemas/ThreeDsParams'
+      description: Req object to Authorize payment, One and  only one of the following
+        fields should be passed.
+    ThreeDsParams:
+      type: object
+      properties:
+        channel:
+          type: string
+        returnUrl:
+          type: string
+        origin:
+          type: string
+        browserInfo:
+          $ref: '#/components/schemas/BrowserInfo'
+        paymentProviderSdkVersion:
+          $ref: '#/components/schemas/PaymentProviderSdkVersion'
+
+    PaymentProviderSdkVersion:
+      type: object
+      properties:
+        sdkVersion:
+          type: string
+          example: 5.5.0/5.56.1/5.1
+          description: This field provides sdk version of payment provide
+        threeDs2SdkVersion:
+          type: string
+          example: 2.2.1, 2.3.0
+          description: this field provides 3ds sdk version of payment provider
+
+    BrowserInfo:
+      type: object
+      properties:
+        screenWidth:
+          type: integer
+          format: int32
+          example: 1680
+        screenHeight:
+          type: integer
+          format: int32
+          example: 1050
+        colorDepth:
+          type: integer
+          format: int32
+          example: 30
+        userAgent:
+          type: string
+        javaEnabled:
+          type: boolean
+        timeZoneOffset:
+          type: integer
+          format: int32
+          example: 30
+        language:
+          type: string
+        acceptHeader:
+          type: string
+    ThreeDS:
+      required:
+        - paymentActionResult
+      type: object
+      properties:
+        paymentActionResult:
+          $ref: '#/components/schemas/PaymentActionResult'
+    PaymentActionResult:
+      required:
+        - transactionId
+        - type
+      type: object
+      properties:
+        transactionId:
+          type: string
+        type:
+          type: string
+          example: Possible values are ['REDIRECT_SHOPPER', 'IDENTIFY_SHOPPER', 'CHALLENGE_SHOPPER'].
+        paymentProviderSdkVersion:
+          $ref: '#/components/schemas/PaymentProviderSdkVersion'
+
+        flowResult:
+          type: string
+        redirect:
+          $ref: '#/components/schemas/RedirectResponse'
+    RedirectResponse:
+      required:
+        - merchantData
+        - paRes
+      type: object
+      properties:
+        merchantData:
+          type: string
+        paRes:
+          type: string
+    RedirectRequest:
+      required:
+        - url
+      type: object
+      properties:
+        url:
+          type: string
+    PaymentActionRequest:
+      required:
+        - transactionId
+        - type
+        - vehicleBlockDateTime
+      type: object
+      properties:
+        transactionId:
+          type: string
+        type:
+          type: string
+          example: Possible values are ['REDIRECT_SHOPPER', 'IDENTIFY_SHOPPER', 'CHALLENGE_SHOPPER'].
+        token:
+          type: string
+        redirect:
+          $ref: '#/components/schemas/RedirectRequest'
+        vehicleBlockDateTime:
+          $ref: '#/components/schemas/BlockDateTime'
+    PaymentRequest:
+      type: object
+      properties:
+        paymentInstrumentId:
+          type: string
+        paymentInstrumentInfo:
+          $ref: '#/components/schemas/PaymentInstrumentInfo'
+    PaymentInstrumentInfo:
+      required:
+        - cardHolderName
+        - expiryDate
+        - paymentBrand
+        - paymentInstrumentToken
+      type: object
+      properties:
+        paymentInstrumentToken:
+          type: string
+        expiryDate:
+          type: string
+        cardHolderName:
+          type: string
+        paymentBrand:
+          type: string
+        cardType:
+          type: string
+    VehicleBlockDateTime:
+      required:
+        - internalIds
+      type: object
+      properties:
+        internalIds:
+          $ref: '#/components/schemas/IDs'
+        date:
+          type: string
+          description: The time at which the vehicle will automatically be unblocked.
+            Timestamp is RFC-3339
+          format: date-time
+          example: 2006-01-02T15:04:05+07:00
+        timeZone:
+          type: string
+      description: VehicleBlockDateTime represents the response payload after blocking
+        a vehicle to a rental activity.
+    Booking:
+      required:
+        - extras
+        - internalIds
+        - priceInfo
+        - protection
+        - rentalActivityId
+      type: object
+      properties:
+        internalIds:
+          $ref: '#/components/schemas/IDs'
+        rentalActivityId:
+          type: string
+          description: the id of the rental-activity
+          example: "1001987478"
+        protection:
+          type: array
+          description: DEPRECATED. Only after apps adopt to new version (using separate
+            fields protectionPackages and protectionSingles) - can be removed. For
+            now should work like before.
+          items:
+            $ref: '#/components/schemas/Charge'
+        protectionPackages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Charge'
+        protectionSingles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Charge'
+        extras:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargeGroup'
+        includedOffersDetails:
+          $ref: '#/components/schemas/IncludedOffersDetails'
+        priceInfo:
+          $ref: '#/components/schemas/PriceInfo'
+        infoMessage:
+          type: string
+          example: Please review the protection coverage that you may have bought
+            outside of Sixt
+        showIncludedOffers:
+          type: boolean
+          description: it signifies if we want to show packages or included offers
+            on protection screen. If true, there is no applicable packages available
+            and show included offer only. Otherwise, behaviour will be as usual.
+    ChargeDetail:
+      required:
+        - description
+        - id
+        - title
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          example: Charge code (i.e. Damage & theft, Roadside Assistance)
+        description:
+          type: string
+          example: description for the charge code (i.e. Avoid high cost, Limit your
+            financial exposure to accidental exposure)
+        iconUrl:
+          type: string
+          example: the charge code icon url (i.e https://www.sixt.com/shared/icons/rent/circle_plus.png)
+          description: Will contain detail of charges which are included in package.
+    IncludedOffersDetails:
+      type: object
+      properties:
+        protectionPackages:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncludedOffer'
+        protectionSingles:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncludedOffer'
+        extras:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncludedOffer'
+        payment:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncludedOffer'
+        noChargeCodeOffers:
+          type: array
+          description: Offers included in the booking other than the included charges
+            (i.e 1567 free miles (0.8 Euro per additional miles) ).
+          items:
+            $ref: '#/components/schemas/IncludedOffer'
+      description: Included Offers wether protections, addons or payment in the booking.
+    IncludedOffer:
+      required:
+        - description
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+          example: The title of the included offer (i.e. unlimited mileage).
+        description:
+          type: string
+          example: The description of the includedOffer (i.e. You have unlimited access
+            to secured parking lots within cities.)
+      description: Included Offer details (i.e. title).
+
+    OfferConfiguration:
+      type: object
+      required:
+        - reservationId
+        - addons
+        - priceInfo
+        - totalPayableAmount
+      properties:
+        reservationId:
+          type: string
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationItem"
+        includedProtections:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChargeDetail"
+        includedAddons:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChargeDetail"
+        protectionPackages:
+          type: array
+          items:
+            $ref: "#/components/schemas/OfferPackage"
+        singleProtections:
+          type: array
+          items:
+            $ref: "#/components/schemas/OfferOption"
+        addons:
+          type: array
+          items:
+            $ref: "#/components/schemas/OfferOptionGroup"
+        vehicleBlockDateTime:
+          $ref: '#/components/schemas/VehicleBlockDateTime'
+        priceInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceInfoBlock'
+        totalPayableAmount:
+          $ref: '#/components/schemas/Amount'
+
+    OfferOptionGroup:
+      type: object
+      required:
+        - options
+        - id
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OfferOption"
+
+    OfferOption:
+      type: object
+      required:
+        - chargeDetail
+        - additionalInfo
+      properties:
+        chargeDetail:
+          $ref: "#/components/schemas/ChargeDetail"
+        additionalInfo:
+          $ref: "#/components/schemas/AdditionalChargeInfo"
+
+    AdditionalChargeInfo:
+      type: object
+      required:
+        - price
+        - isPreviouslySelected
+        - isSelected
+        - isEnabled
+        - isNudge
+      properties:
+        price:
+          $ref: "#/components/schemas/PriceV2"
+        isPreviouslySelected:
+          type: boolean
+        isSelected:
+          type: boolean
+        isEnabled:
+          type: boolean
+        selectionStrategy:
+          $ref: "#/components/schemas/SelectionStrategy"
+        isNudge:
+          type: boolean
+
+    ChargeGroupV2:
+      type: object
+      required:
+        - id
+        - order
+      properties:
+        id:
+          type: integer
+        order:
+          type: integer
+        name:
+          type: string
+
+    SelectionStrategy:
+      type: object
+      required:
+        - isMultiSelectionAllowed
+        - maxSelectionLimit
+        - currentSelection
+      properties:
+        isMultiSelectionAllowed:
+          type: boolean
+        maxSelectionLimit:
+          type: integer
+        currentSelection:
+          type: integer
+
+    OfferPackage:
+      type: object
+      required:
+        - id
+        - name
+        - deductibleAmount
+        - ratingStars
+        - includes
+        - excludes
+        - isPreviouslySelected
+        - isSelected
+        - isDeductibleAvailable
+        - isNudge
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        deductibleAmount:
+          $ref: "#/components/schemas/Amount"
+        ratingStars:
+          type: number
+          format: double
+        isPreviouslySelected:
+          type: boolean
+        isSelected:
+          type: boolean
+        isDeductibleAvailable:
+          type: boolean
+        includes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChargeDetail"
+        excludes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChargeDetail"
+        price:
+          $ref: "#/components/schemas/PriceV2"
+        isNudge:
+          type: boolean
+
+    Amount:
+      type: object
+      required:
+        - currency
+        - value
+      properties:
+        currency:
+          type: string
+          example: USD
+        value:
+          type: number
+          format: double
+          example: 330.82
+
+    IDs:
+      required:
+        - reservationId
+      type: object
+      properties:
+        reservationId:
+          type: string
+      description: Reservation ID, rental activity ID for the booking
+    PaymentCounterResponse:
+      required:
+        - imageUrl
+        - instructionList
+        - internalIds
+        - trip
+        - vehicleTitle
+      type: object
+      properties:
+        internalIds:
+          $ref: '#/components/schemas/IDs'
+        vehicleTitle:
+          type: string
+          example: Midsize SUV
+        vehicleSubtitle:
+          type: string
+          example: BMW 7 Series or similar
+        imageUrl:
+          type: string
+        instructionList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstructionDetails'
+        trip:
+          $ref: '#/components/schemas/Trip'
+        blockDateTime:
+          $ref: '#/components/schemas/BlockDateTime'
+    InstructionDetails:
+      title: InstructionDetails
+      required:
+        - details
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstructionDetailItem'
+    InstructionDetailItem:
+      title: InstructionDetailItem
+      required:
+        - text
+        - type
+      type: object
+      properties:
+        text:
+          type: string
+        type:
+          type: string
+          description: |-
+            Probable values are
+             - subtitle
+             - qrcode
+             - navigation
+             - direction
+        attributes:
+          $ref: '#/components/schemas/InstructionAttributes'
+    InstructionAttributes:
+      title: Attributes
+      type: object
+      properties:
+        direction:
+          type: array
+          items:
+            $ref: '#/components/schemas/DirectionListItem'
+        location:
+          $ref: '#/components/schemas/LocationItem'
+    DirectionListItem:
+      title: DirectionListItem
+      required:
+        - description
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+    LocationItem:
+      title: Location
+      required:
+        - latitude
+        - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    BlockDateTime:
+      type: object
+      properties:
+        date:
+          type: string
+          description: The time at which the Ra status will automatically be changed
+            to RA_RESERVATION. Timestamp is RFC-3339
+          format: date-time
+          example: 2006-01-02T15:04:05+07:00
+        timeZone:
+          type: string
+          example: America/New_York
+      description: BlockDateTime represents the time for which a rental activity will
+        be returned back to RA_RESERVATION.
+    EligibleDiscount:
+      type: object
+      properties:
+        isBookingDigitalCheckoutEligible:
+          type: boolean
+        discount:
+          $ref: '#/components/schemas/DiscountDetails'
+      description: DiscountEligibility response object
+    DiscountDetails:
+      type: object
+      properties:
+        eligible:
+          type: boolean
+        discountType:
+          type: string
+          description: will indicate The type of discount values from these values[
+            RATE, AMOUNT]
+        discountValue:
+          type: number
+          format: double
+        incentivizationUseCase:
+          type: string
+          description: will indicate The type of discounts  from these values [ VOUCHER,
+            DISCOUNT]
+        message:
+          type: string
+        validityDateTime:
+          $ref: '#/components/schemas/BlockDateTime'
+      description: DiscountDetails object
