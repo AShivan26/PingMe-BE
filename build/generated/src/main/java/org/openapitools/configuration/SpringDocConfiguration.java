@@ -18,9 +18,8 @@ public class SpringDocConfiguration {
         return new OpenAPI()
                 .info(
                         new Info()
-                                .title("DC Vehicle Selection APIs")
-                                .description("Digital Checkout Vehicle Selection RESTful API documentation.")
-                                .termsOfService("https://sixt.com")
+                                .title("Ping Me Messaging System APIs")
+                                .description("Ping Me Messaging RESTful API documentation.")
                                 .license(
                                         new License()
                                                 .name("Apache 2.0")
