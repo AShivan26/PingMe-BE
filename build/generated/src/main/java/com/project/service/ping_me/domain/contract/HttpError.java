@@ -31,8 +31,6 @@ public class HttpError {
 
   private String title;
 
-  private String raStatus;
-
   public HttpError data(Object data) {
     this.data = data;
     return this;
@@ -79,11 +77,11 @@ public class HttpError {
   }
 
   /**
-   * human readable error message (e.g. 'The requested user could not be found')
+   * Human readable error message (e.g. 'The requested user could not be found')
    * @return message
   */
   
-  @Schema(name = "message", description = "human readable error message (e.g. 'The requested user could not be found')", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "message", description = "Human readable error message (e.g. 'The requested user could not be found')", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("message")
   public String getMessage() {
     return message;
@@ -133,26 +131,6 @@ public class HttpError {
     this.title = title;
   }
 
-  public HttpError raStatus(String raStatus) {
-    this.raStatus = raStatus;
-    return this;
-  }
-
-  /**
-   * tells the current status of RA (e.g. 'RA_CHECKOUT','RA_PAYMENT')
-   * @return raStatus
-  */
-  
-  @Schema(name = "raStatus", description = "tells the current status of RA (e.g. 'RA_CHECKOUT','RA_PAYMENT')", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("raStatus")
-  public String getRaStatus() {
-    return raStatus;
-  }
-
-  public void setRaStatus(String raStatus) {
-    this.raStatus = raStatus;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -166,13 +144,12 @@ public class HttpError {
         Objects.equals(this.errorCode, httpError.errorCode) &&
         Objects.equals(this.message, httpError.message) &&
         Objects.equals(this.retriable, httpError.retriable) &&
-        Objects.equals(this.title, httpError.title) &&
-        Objects.equals(this.raStatus, httpError.raStatus);
+        Objects.equals(this.title, httpError.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(data, errorCode, message, retriable, title, raStatus);
+    return Objects.hash(data, errorCode, message, retriable, title);
   }
 
   @Override
@@ -184,7 +161,6 @@ public class HttpError {
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("    retriable: ").append(toIndentedString(retriable)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
-    sb.append("    raStatus: ").append(toIndentedString(raStatus)).append("\n");
     sb.append("}");
     return sb.toString();
   }
