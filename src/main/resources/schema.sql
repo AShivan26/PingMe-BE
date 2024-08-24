@@ -1,0 +1,1 @@
+create table person (id uuid not null, name varchar(255), password varchar(255), online boolean, primary key (id));
