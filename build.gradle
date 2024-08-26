@@ -39,6 +39,9 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
+	// https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable
+	implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
+
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 /**
@@ -49,6 +52,7 @@ apply from: 'gradle/build.spotbugs.gradle'
 /*********************
  * OpenAPI Model Generation Tasks
  *********************/
+sourceSets.main.java.srcDirs = ['build/generated/src/main/java', 'src/main/java']
 openApiGenerate {
 	generatorName = "spring"
 	library = "spring-boot"
