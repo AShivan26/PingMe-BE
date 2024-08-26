@@ -23,6 +23,7 @@ paths:
       tags:
         - Ping-Me-Login
       summary: Login Existing User
+      operationId: pingMeLogin
       parameters:
         - in: query
           name: username
@@ -76,6 +77,7 @@ paths:
       tags:
         - Ping-Me-Login
       summary: Create User in System
+      operationId: pingMeRegister
       requestBody:
         description: Register user
         required: true
@@ -122,6 +124,7 @@ paths:
       tags:
         - Ping-Me-User-Details
       summary: Gets all users present in the system.
+      operationId: getAllUsers
       description: |-
         ## Gets all users present in the system
 
@@ -130,7 +133,6 @@ paths:
         ```
         GET /v1/ping-me/115646542/users -H "Authorization: Bearer TOKEN"
         ```
-      operationId: AllUserDetails
       responses:
         200:
           description: Returns entry response object

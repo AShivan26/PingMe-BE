@@ -25,7 +25,7 @@ public class PingMeLoginApiDelegateImpl implements PingMeLoginApiDelegate {
     }
 
     @Override
-    public ResponseEntity<RegisterResponseObject> pingmeRegisterPost(RegisterRequestObject registerRequestObject) {
+    public ResponseEntity<RegisterResponseObject> pingMeRegister(RegisterRequestObject registerRequestObject) {
 
         UserEntity entity = userService.registerUser(registerRequestObject);
         RegisterResponseObject registerResponseObject = new RegisterResponseObject();
