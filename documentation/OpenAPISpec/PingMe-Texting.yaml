@@ -8,12 +8,7 @@ info:
   version: 1.0.0
 servers:
   - description: Dev url
-    url: https://api-dev.pingme.com/{basePath}
-    variables:
-      basePath:
-        default: api/
-  - description: Stage url
-    url: https://api-stage.pingme.com/{basePath}
+    url: http://localhost:8080/
     variables:
       basePath:
         default: api/
