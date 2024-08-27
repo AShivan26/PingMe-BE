@@ -1,26 +1,18 @@
 package com.project.service.service;
 
 import com.project.service.entity.UserEntity;
+import com.project.service.entity.contract.RegisterRequestObject;
 import com.project.service.persistence.UserRepository;
-import com.project.service.ping_me.domain.contract.RegisterRequestObject;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 @Slf4j
+@Service
 public class UserService {
 
-    UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
 
     public UserEntity registerUser(RegisterRequestObject registerRequestObject){
 
