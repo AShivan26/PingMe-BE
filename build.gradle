@@ -41,7 +41,6 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
-	// https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable
 	implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -50,36 +49,6 @@ dependencies {
  * Apply SpotBugs to the code before even running the testcases
  */
 apply from: 'gradle/build.spotbugs.gradle'
-
-/*********************
- * OpenAPI Model Generation Tasks
- *********************/
-//sourceSets.main.java.srcDirs = ['build/generated/src/main/java', 'src/main/java']
-//openApiGenerate {
-//	generatorName = "spring"
-//	library = "spring-boot"
-//	inputSpec = "$rootDir/documentation/OpenAPISpec/PingMe-Texting.yaml".toString()
-//	outputDir = "$buildDir/generated".toString()
-//	apiPackage = "com.project.service.ping_me.domain.api"
-//	modelPackage = "com.project.service.ping_me.domain.contract"
-//	templateDir = "$rootDir/src/main/resources/openapi-custom-template"
-//	configOptions.set([
-//			booleanGetterPrefix    : "is",
-//			hideGenerationTimestamp: "true",
-//			dateLibrary            : "java8",
-//			// DelegatePattern attribute will work only when interfaceOnly attribute is set to
-//			// false
-//			delegatePattern        : "true",
-//			openApiNullable        : "true",
-//			interfaceOnly          : "false",
-//			useSpringController    : "true",
-//			useSpringBoot3         : "true",
-//			useTags                : "true"
-//	])
-//}
-//
-////tasks.openApiGenerate.dependsOn generateProto
-//tasks.compileJava.dependsOn tasks.openApiGenerate
 
 tasks.named('test') {
 	useJUnitPlatform()

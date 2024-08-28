@@ -1,9 +1,9 @@
 package com.project.service.adapter.rest;
 
 import com.project.service.entity.UserEntity;
-import com.project.service.entity.contract.RegisterRequestObject;
-import com.project.service.entity.contract.RegisterResponseObject;
-import com.project.service.service.UserService;
+import com.project.service.contract.RegisterRequestObject;
+import com.project.service.contract.RegisterResponseObject;
+import com.project.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class PingMeLoginApiDelegateImpl {
+public class PingMeApiController {
 
-    private final UserService userService;  // Make this final to use @RequiredArgsConstructor
+    private final UserService userService;
 
     @PostMapping("/pingme/register")
     public ResponseEntity<RegisterResponseObject> pingMeRegister(@RequestBody RegisterRequestObject registerRequestObject) {
