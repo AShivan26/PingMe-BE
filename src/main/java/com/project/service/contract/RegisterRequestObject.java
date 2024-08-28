@@ -1,4 +1,4 @@
-package com.project.service.entity.contract;
+package com.project.service.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

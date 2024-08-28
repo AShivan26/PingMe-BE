@@ -1,7 +1,7 @@
-package com.project.service.service;
+package com.project.service;
 
 import com.project.service.entity.UserEntity;
-import com.project.service.entity.contract.RegisterRequestObject;
+import com.project.service.contract.RegisterRequestObject;
 import com.project.service.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
