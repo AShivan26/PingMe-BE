@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class UserService {
     public UserEntity loginUser(RegisterRequestObject registerRequestObject) {
         UserEntity retrievedEntity = userRepository.findByNameAndPassword(registerRequestObject.getUsername(), registerRequestObject.getPassword());
         //For New user Just register him to the system
-        if (retrievedEntity == null) {
+        if (Objects.isNull(retrievedEntity)) {
             //Don't Do this,Throw an exception and redirect to register API from Front-End
             return registerUser(registerRequestObject);
         }
@@ -63,7 +64,7 @@ public class UserService {
      */
     public Boolean logOutUser(UUID userId) {
         UserEntity retrievedEntity = userRepository.findById(userId).orElse(null);
-        if (retrievedEntity != null) {
+        if (!Objects.isNull(retrievedEntity)) {
             retrievedEntity.setOnline(false);
             userRepository.save(retrievedEntity);
             return true;

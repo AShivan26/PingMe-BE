@@ -50,36 +50,6 @@ dependencies {
  */
 apply from: 'gradle/build.spotbugs.gradle'
 
-///*********************
-// * OpenAPI Model Generation Tasks
-// *********************/
-//sourceSets.main.java.srcDirs = ['build/generated/src/main/java', 'src/main/java']
-//openApiGenerate {
-//	generatorName = "spring"
-//	library = "spring-boot"
-//	inputSpec = "$rootDir/documentation/OpenAPISpecs/PingMe-Texting.yaml".toString()
-//	outputDir = "$buildDir/generated".toString()
-//	apiPackage = "com.project.service.ping_me.domain.api"
-//	modelPackage = "com.project.service.ping_me.domain.contract"
-//	templateDir = "$rootDir/src/main/resources/openapi-custom-template"
-//	configOptions.set([
-//			booleanGetterPrefix    : "is",
-//			hideGenerationTimestamp: "true",
-//			dateLibrary            : "java8",
-//			// DelegatePattern attribute will work only when interfaceOnly attribute is set to
-//			// false
-//			delegatePattern        : "true",
-//			openApiNullable        : "true",
-//			interfaceOnly          : "false",
-//			useSpringController    : "true",
-//			useSpringBoot3         : "true",
-//			useTags                : "true"
-//	])
-//}
-//
-////tasks.openApiGenerate.dependsOn generateProto
-//tasks.compileJava.dependsOn tasks.openApiGenerate
-
 tasks.named('test') {
 	useJUnitPlatform()
 	afterTest { desc, result ->
