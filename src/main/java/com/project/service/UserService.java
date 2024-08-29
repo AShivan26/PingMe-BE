@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,15 +57,27 @@ public class UserService {
             return userRepository.save(retrievedEntity);
         }
     }
-
-    public List<UserEntity> getAllUsers(UUID uuid) {
-        ArrayList<UserEntity> findAllByOnline = userRepository.findAllByOnline(true);
-        List<UserEntity> filteredList = new ArrayList<>();
-        for (UserEntity userEntity : findAllByOnline) {
-            if (!userEntity.getId().equals(uuid)) {
-                filteredList.add(userEntity);
-            }
+    /**
+     * @param userId
+     * @return UserEntity
+     */
+    public Boolean logOutUser(UUID userId) {
+        UserEntity retrievedEntity = userRepository.findById(userId).orElse(null);
+        if (retrievedEntity != null) {
+            retrievedEntity.setOnline(false);
+            userRepository.save(retrievedEntity);
+            return true;
+        }else {
+            return false;
         }
-        return filteredList;
+    }
+    /**
+     * @param uuid
+     * @return List of UserEntity except the uuid matching request
+     */
+    public List<UserEntity> getAllUsers(UUID uuid) {
+        return userRepository.findAllByOnline(true).stream()
+                .filter(userEntity -> !userEntity.getId().equals(uuid))
+                .collect(Collectors.toList());
     }
 }
