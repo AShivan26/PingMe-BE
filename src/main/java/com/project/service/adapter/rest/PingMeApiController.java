@@ -51,6 +51,12 @@ public class PingMeApiController {
         return new ResponseEntity<>(registerResponseObject, HttpStatus.OK);
     }
 
+    @GetMapping("/pingme/logout/{userid}")
+    public ResponseEntity<Boolean> pingMeLogout(@PathVariable UUID userid) {
+        Boolean response = userService.logOutUser(userid);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/pingme/users/{userId}")
     public ResponseEntity<List<UserResponseObject>> pingMeGetAllUsers(@PathVariable UUID userId) {
         List<UserEntity> listOfOnlineUsers = userService.getAllUsers(userId);
