@@ -1,12 +1,21 @@
 package com.project.service.contract;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.annotation.Generated;
-import jakarta.validation.Valid;
-
+import java.net.URI;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.UUID;
+
+import com.project.service.contract.HttpError;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.time.OffsetDateTime;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+
+import java.util.*;
+import jakarta.annotation.Generated;
 
 /**
  * RegisterResponseObject
@@ -17,6 +26,8 @@ public class RegisterResponseObject {
 
   private UUID userId;
 
+  private HttpError error;
+
   public RegisterResponseObject userId(UUID userId) {
     this.userId = userId;
     return this;
@@ -25,8 +36,8 @@ public class RegisterResponseObject {
   /**
    * Get userId
    * @return userId
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "userId", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("userId")
   public UUID getUserId() {
@@ -35,6 +46,26 @@ public class RegisterResponseObject {
 
   public void setUserId(UUID userId) {
     this.userId = userId;
+  }
+
+  public RegisterResponseObject error(HttpError error) {
+    this.error = error;
+    return this;
+  }
+
+  /**
+   * Get error
+   * @return error
+   */
+  @Valid
+  @Schema(name = "error", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("error")
+  public HttpError getError() {
+    return error;
+  }
+
+  public void setError(HttpError error) {
+    this.error = error;
   }
 
   @Override
@@ -46,12 +77,13 @@ public class RegisterResponseObject {
       return false;
     }
     RegisterResponseObject registerResponseObject = (RegisterResponseObject) o;
-    return Objects.equals(this.userId, registerResponseObject.userId);
+    return Objects.equals(this.userId, registerResponseObject.userId) &&
+            Objects.equals(this.error, registerResponseObject.error);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userId);
+    return Objects.hash(userId, error);
   }
 
   @Override
@@ -59,6 +91,7 @@ public class RegisterResponseObject {
     StringBuilder sb = new StringBuilder();
     sb.append("class RegisterResponseObject {\n");
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    error: ").append(toIndentedString(error)).append("\n");
     sb.append("}");
     return sb.toString();
   }
