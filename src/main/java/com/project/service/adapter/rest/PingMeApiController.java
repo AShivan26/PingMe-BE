@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -47,6 +48,16 @@ public class PingMeApiController {
     @GetMapping("/pingme/login")
     public ResponseEntity<RegisterResponseObject> pingMeLogin(@RequestBody RegisterRequestObject registerRequestObject) {
         UserEntity entity = userService.loginUser(registerRequestObject);
+        if (Objects.isNull(entity)) {
+            RegisterResponseObject registerResponseObject =
+                    domainToResponseMapper.PingMeRegisterOrLoginErrorCaseResponseMapper(
+                            new HttpErrorDomainObject(null,
+                                    "400",
+                                    "User Doesn't Exist",
+                                    Boolean.TRUE,
+                                    HttpStatus.BAD_REQUEST.name()));
+            return new ResponseEntity<>(registerResponseObject, HttpStatus.BAD_REQUEST);
+        }
         RegisterResponseObject registerResponseObject = domainToResponseMapper.PingMeRegisterOrLoginResponseMapper(entity);
         return new ResponseEntity<>(registerResponseObject, HttpStatus.OK);
     }
