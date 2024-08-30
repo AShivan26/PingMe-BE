@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -46,17 +43,15 @@ public class UserService {
      * @return UserEntity
      */
     public UserEntity loginUser(RegisterRequestObject registerRequestObject) {
-        UserEntity retrievedEntity = userRepository.findByNameAndPassword(registerRequestObject.getUsername(), registerRequestObject.getPassword());
-        //For New user Just register him to the system
-        if (Objects.isNull(retrievedEntity)) {
-            //Don't Do this,Throw an exception and redirect to register API from Front-End
-            return registerUser(registerRequestObject);
+        Optional<UserEntity>  retrievedEntity = userRepository.findByNameAndPassword(registerRequestObject.getUsername(), registerRequestObject.getPassword());
+        if (retrievedEntity.isEmpty()) {
+            log.info("No User with the given credentials exists");
+            return null;
         }
         //Make the User Online and Update in DB
-        else {
-            retrievedEntity.setOnline(true);
-            return userRepository.save(retrievedEntity);
-        }
+        retrievedEntity.get().setOnline(true);
+        return userRepository.save(retrievedEntity.get());
+
     }
     /**
      * @param userId

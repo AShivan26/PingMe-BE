@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
-    UserEntity findByNameAndPassword(@Param("name") String name, @Param("password") String password);
+    Optional<UserEntity> findByNameAndPassword(@Param("name") String name, @Param("password") String password);
 
     ArrayList<UserEntity> findAllByOnline(boolean online);
 
