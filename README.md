@@ -7,7 +7,7 @@
 ![Postman](https://img.shields.io/badge/tool-Postman-orange)
 ![Database](https://img.shields.io/badge/database-H2%20Database-blue)
 ![Build](https://img.shields.io/badge/build-Gradle-23B5D3)
-![Static Analysis](https://img.shields.io/badge/analysis-SpotBugs-red)
+![Static Analysis](https://img.shields.io/badge/static_analysis-SpotBugs-red)
 
 # PingMe
 The project focuses on having a user interface for chatting system PingMe
