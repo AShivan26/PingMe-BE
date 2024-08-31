@@ -20,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class PingMeApiController {
 
     private final UserService userService;
@@ -42,7 +43,7 @@ public class PingMeApiController {
     }
 
 
-    @GetMapping("/pingme/login")
+    @PostMapping("/pingme/login")
     public ResponseEntity<RegisterResponseObject> pingMeLogin(@RequestBody RegisterRequestObject registerRequestObject) {
         UserEntity entity = userService.loginUser(registerRequestObject);
         if (Objects.isNull(entity)) {
