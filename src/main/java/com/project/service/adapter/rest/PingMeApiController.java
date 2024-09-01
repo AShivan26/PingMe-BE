@@ -54,7 +54,7 @@ public class PingMeApiController {
         return new ResponseEntity<>(registerResponseObject, HttpStatus.OK);
     }
 
-    @GetMapping("/pingme/logout/{userid}")
+    @PostMapping("/pingme/logout/{userid}")
     public ResponseEntity<Boolean> pingMeLogout(@PathVariable UUID userid) {
         Boolean response = userService.logOutUser(userid);
         return new ResponseEntity<>(response, HttpStatus.OK);

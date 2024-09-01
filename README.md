@@ -35,8 +35,8 @@ the system already does.
 | HTTP Method | API Endpoint                  | Response Status |
 |:------------|:------------------------------|:----------------|
 | `POST`      | /pingme/register              | 201 (CREATED)   |
-| `GET`       | /pingme/login                 | 200 (OK)        |
-| `GET`       | /pingme/logout/{userid}       | 200 (OK)        |
+| `POST`      | /pingme/login                 | 200 (OK)        |
+| `POST`      | /pingme/logout/{userid}       | 200 (OK)        |
 | `GET`       | /pingme/users/{userId}        | 200 (OK)        |
                                                                                                                                                   |
 ## Who do I talk to? ###
