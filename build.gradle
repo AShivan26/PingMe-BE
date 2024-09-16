@@ -41,6 +41,9 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
+	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
