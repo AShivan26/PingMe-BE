@@ -3,7 +3,7 @@ CREATE TYPE message_status AS ENUM ('SENDING', 'SENT');
 CREATE TABLE conversation (id UUID NOT NULL,
                            fromId UUID,
                            toId UUID,
-                           messages JSONB,,
+                           messages CLOB,
                            createdAt TIMESTAMP,
                            lastModifiedAt TIMESTAMP,
                            messageStatus message_status,
