@@ -4,9 +4,9 @@ import com.project.service.contract.HttpError;
 import com.project.service.contract.RegisterResponseObject;
 import com.project.service.domain.HttpErrorDomainObject;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class DomainToResponseErrorMapper {
     public RegisterResponseObject PingMeRegisterOrLoginErrorCaseResponseMapper(HttpErrorDomainObject errorDomainObject) {
         RegisterResponseObject registerResponseObject = new RegisterResponseObject();
