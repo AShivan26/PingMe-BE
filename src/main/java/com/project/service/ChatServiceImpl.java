@@ -1,0 +1,70 @@
+package com.project.service;
+
+import com.project.service.entity.ChatEntity;
+import com.project.service.entity.UserEntity;
+import com.project.service.exception.ChatException;
+import com.project.service.exception.UserException;
+import com.project.service.persistence.ChatRepository;
+import com.project.service.persistence.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ChatServiceImpl implements ChatService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ChatRepository chatRepository;
+
+    @Override
+    public ChatEntity createChat(UUID fromUseId, UUID toUserId) throws UserException {
+        UserEntity fromUser = userRepository.findById(fromUseId).orElse(null);
+        if (fromUser == null) {
+            throw new UserException("From User Doesn't exist");
+        }
+        UserEntity toUser = userRepository.findById(toUserId).orElse(null);
+        if (toUser == null) {
+            throw new UserException("To User Doesn't exist");
+        }
+        ChatEntity isChatExist = this.chatRepository.findSingleChatByUserIds(toUser, fromUser);
+        log.info("The contents of toUser is : {}", isChatExist);
+        System.out.println(isChatExist);
+        if (isChatExist != null) {
+            return isChatExist;
+        }
+
+        ChatEntity chat = new ChatEntity();
+        chat.setCreatedBy(fromUser);
+        chat.getUsers().add(toUser);
+        chat.getUsers().add(fromUser);
+        chat.setGroup(false);
+
+        chat = this.chatRepository.save(chat);
+
+        return chat;
+    }
+
+    @Override
+    public void deleteChat(UUID chatId, UUID userId) throws ChatException, UserException {
+        UserEntity fromUser = userRepository.findById(userId).orElse(null);
+        if (fromUser == null) {
+            throw new UserException("From User Doesn't exist");
+        }
+        ChatEntity chat = this.chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException("The expected chat is not found while deleting"));
+        this.chatRepository.delete(chat);
+    }
+    @Override
+    public ChatEntity findChatById(UUID chatId) throws ChatException {
+        return this.chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException("The requested chat is not found"));
+    }
+}
