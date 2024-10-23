@@ -1,9 +1,9 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.3-SNAPSHOT'
-	id 'io.spring.dependency-management' version '1.1.6'
-	id 'org.openapi.generator' version "7.0.0"
-	id "com.github.spotbugs" version "5.1.3"
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3-SNAPSHOT'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.openapi.generator' version "7.0.0"
+    id "com.github.spotbugs" version "5.1.3"
     id 'org.jetbrains.kotlin.jvm'
 }
 
@@ -11,51 +11,57 @@ group = 'com.project.service'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(22)
-		//test
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(22)
+        //test
+    }
 }
 
 repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/snapshot' }
+    mavenCentral()
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'org.springframework.retry:spring-retry:1.3.4'  // Check for the latest version
-	implementation 'org.springframework:spring-aspects:5.3.30'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.retry:spring-retry:1.3.4'  // Check for the latest version
+    implementation 'org.springframework:spring-aspects:5.3.30'
 
-	//OpenAPI
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-	implementation 'io.swagger:swagger-annotations:1.6.8'
+    //OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    implementation 'io.swagger:swagger-annotations:1.6.8'
 
-	//lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+    //lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
-	//db
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.h2database:h2'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    //db
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
-	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // https://mvnrepository.com/artifact/org.springframework/spring-websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
-	// testing
-	testImplementation("org.springframework.boot:spring-boot-starter-test") {
-		exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-	}
-	testImplementation platform("org.testcontainers:testcontainers-bom:1.20.2")
-	testImplementation "org.testcontainers:postgresql"
-	testImplementation "org.testcontainers:junit-jupiter"
-	testImplementation "org.springframework.security:spring-security-test"
+    implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'
 
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+//    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+//    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // or jjwt-gson if Gson is preferred
+
+    // testing
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+    }
+    testImplementation platform("org.testcontainers:testcontainers-bom:1.20.2")
+    testImplementation "org.testcontainers:postgresql"
+    testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation "org.springframework.security:spring-security-test"
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 /**
  * Apply SpotBugs to the code before even running the testcases
@@ -63,21 +69,21 @@ dependencies {
 apply from: 'gradle/build.spotbugs.gradle'
 
 tasks.named('test') {
-	useJUnitPlatform()
-	afterTest { desc, result ->
-		logger.quiet "Running ${desc.className}.${desc.name}: ${result.resultType}"
-	}
+    useJUnitPlatform()
+    afterTest { desc, result ->
+        logger.quiet "Running ${desc.className}.${desc.name}: ${result.resultType}"
+    }
 
-	testLogging {
-		exceptionFormat = 'full'
-		afterSuite { desc, result ->
-			if (!desc.parent) {
-				def output = "Result: ${result.resultType}, Total: ${result.testCount}, " +
-						"(Success: ${result.successfulTestCount} , Failure: ${result.failedTestCount}, Skipped: ${result.skippedTestCount})"
-				def startItem = '|  ', endItem = '  |'
-				def repeatLength = startItem.length() + output.length() + endItem.length()
-				println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
-			}
-		}
-	}
+    testLogging {
+        exceptionFormat = 'full'
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                def output = "Result: ${result.resultType}, Total: ${result.testCount}, " +
+                        "(Success: ${result.successfulTestCount} , Failure: ${result.failedTestCount}, Skipped: ${result.skippedTestCount})"
+                def startItem = '|  ', endItem = '  |'
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            }
+        }
+    }
 }

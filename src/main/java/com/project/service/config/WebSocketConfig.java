@@ -23,23 +23,37 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${frontend.caller.host:http://localhost:3000}")
     private String frontendCallerHost;
 
+//    @Override
+//    public void registerStompEndpoints(StompEndpointRegistry registry) {
+//        RequestUpgradeStrategy upgradeStrategy = new TomcatRequestUpgradeStrategy();
+//        registry
+//                .addEndpoint("/ws")
+//                .setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy))
+//                .setAllowedOrigins(frontendCallerHost);
+//    }
+//
+//    @Override
+//    public void configureMessageBroker(MessageBrokerRegistry registry) {
+//        registry
+//                .setApplicationDestinationPrefixes("/app")
+//                .enableSimpleBroker("/topic")
+//                .setTaskScheduler(heartBeatScheduler())
+//                .setHeartbeatValue(new long[] {10000L, 10000L});
+//    }
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        RequestUpgradeStrategy upgradeStrategy = new TomcatRequestUpgradeStrategy();
-        registry
-                .addEndpoint("/ws")
-                .setHandshakeHandler(new DefaultHandshakeHandler(upgradeStrategy))
-                .setAllowedOrigins(frontendCallerHost);
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
     }
+
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry
-                .setApplicationDestinationPrefixes("/app")
-                .enableSimpleBroker("/topic")
-                .setTaskScheduler(heartBeatScheduler())
-                .setHeartbeatValue(new long[] {10000L, 10000L});
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/group", "/user");
+        registry.setUserDestinationPrefix("/user");
     }
+
 
     @Bean
     public TaskScheduler heartBeatScheduler() {
