@@ -1,5 +1,6 @@
 package com.project.service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class MessageEntity {
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "chat_id", nullable = false)
     private ChatEntity chat;

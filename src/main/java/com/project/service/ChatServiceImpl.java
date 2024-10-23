@@ -1,5 +1,6 @@
 package com.project.service;
 
+import com.project.service.contract.GroupChatRequestObject;
 import com.project.service.entity.ChatEntity;
 import com.project.service.entity.UserEntity;
 import com.project.service.exception.ChatException;
@@ -62,9 +63,32 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new ChatException("The expected chat is not found while deleting"));
         this.chatRepository.delete(chat);
     }
+
     @Override
     public ChatEntity findChatById(UUID chatId) throws ChatException {
         return this.chatRepository.findById(chatId)
                 .orElseThrow(() -> new ChatException("The requested chat is not found"));
+    }
+
+    @Override
+    public ChatEntity createGroup(GroupChatRequestObject req) throws UserException {
+        UserEntity fromUser = userRepository.findById(req.getFromId()).orElse(null);
+        if (fromUser == null) {
+            throw new UserException("From User Doesn't exist");
+        }
+        ChatEntity group = new ChatEntity();
+        group.setGroup(true);
+        group.setChatImage(req.getChatImage());
+        group.setChatName(req.getChatName());
+        group.setCreatedBy(fromUser);
+        group.getAdmins().add(fromUser);
+
+        for (UUID userId : req.getUserIds()) {
+            UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserException("The requested user is not found"));
+            group.getUsers().add(user);
+        }
+
+        group = this.chatRepository.save(group);
+        return group;
     }
 }
