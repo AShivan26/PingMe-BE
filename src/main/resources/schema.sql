@@ -1,9 +1,12 @@
-create table person (
-                       id uuid not null,
-                       name varchar(255),
-                       password varchar(255),
-                       online boolean, primary key (id)
+CREATE TABLE person (
+                        id UUID PRIMARY KEY NOT NULL,
+                        name VARCHAR(255) NOT NULL,
+                        password VARCHAR(255) NOT NULL,
+                        online BOOLEAN,
+                        email VARCHAR(255) NOT NULL,
+                        profile VARCHAR(255)
 );
+
 
 -- Table for chats
 CREATE TABLE chats (

@@ -13,5 +13,4 @@ import java.util.UUID;
 @Builder
 public class SingleChatRequestObject {
     private UUID toUserId;
-    private UUID fromUserId;
 }

@@ -14,5 +14,4 @@ public class GroupChatRequestObject {
     private List<UUID> userIds;
     private String chatName;
     private String chatImage;
-    private UUID fromId;
 }

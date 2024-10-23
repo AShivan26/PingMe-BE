@@ -25,6 +25,12 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "online", nullable = false)
+    @Column(name = "online")
     private boolean online;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "profile")
+    private String profile;
 }

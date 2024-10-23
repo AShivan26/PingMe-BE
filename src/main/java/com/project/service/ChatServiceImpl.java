@@ -26,11 +26,8 @@ public class ChatServiceImpl implements ChatService {
     private ChatRepository chatRepository;
 
     @Override
-    public ChatEntity createChat(UUID fromUseId, UUID toUserId) throws UserException {
-        UserEntity fromUser = userRepository.findById(fromUseId).orElse(null);
-        if (fromUser == null) {
-            throw new UserException("From User Doesn't exist");
-        }
+    public ChatEntity createChat(UserEntity fromUser, UUID toUserId) throws UserException {
+
         UserEntity toUser = userRepository.findById(toUserId).orElse(null);
         if (toUser == null) {
             throw new UserException("To User Doesn't exist");
@@ -54,11 +51,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void deleteChat(UUID chatId, UUID userId) throws ChatException, UserException {
-        UserEntity fromUser = userRepository.findById(userId).orElse(null);
-        if (fromUser == null) {
-            throw new UserException("From User Doesn't exist");
-        }
+    public void deleteChat(UUID chatId, UserEntity fromUser) throws ChatException, UserException {
         ChatEntity chat = this.chatRepository.findById(chatId)
                 .orElseThrow(() -> new ChatException("The expected chat is not found while deleting"));
         this.chatRepository.delete(chat);
@@ -71,11 +64,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatEntity createGroup(GroupChatRequestObject req) throws UserException {
-        UserEntity fromUser = userRepository.findById(req.getFromId()).orElse(null);
-        if (fromUser == null) {
-            throw new UserException("From User Doesn't exist");
-        }
+    public ChatEntity createGroup(GroupChatRequestObject req, UserEntity fromUser) throws UserException {
         ChatEntity group = new ChatEntity();
         group.setGroup(true);
         group.setChatImage(req.getChatImage());

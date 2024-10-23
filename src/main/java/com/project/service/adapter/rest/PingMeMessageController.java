@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/messages")
+@RequestMapping("/pingme/messages")
 public class PingMeMessageController {
 
     @Autowired
