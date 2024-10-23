@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     ArrayList<UserEntity> findAllByOnline(boolean online);
 
     Optional<UserEntity> findByName(String name);
+
+    UserEntity findByEmail(String email);
 }

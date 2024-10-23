@@ -53,7 +53,9 @@ public class MessageServiceImpl implements MessageService {
         if (chat.isGroup()) {
             messagingTemplate.convertAndSend("/group/" + chat.getId(), message);
         } else {
-            messagingTemplate.convertAndSend("/user/" + chat.getId(), message);
+            //messagingTemplate.convertAndSend("/user/" + chat.getId(), message);
+            messagingTemplate.convertAndSendToUser(fromUser.getName(), "/queue/messages", message);
+
         }
 
         return message;

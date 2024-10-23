@@ -1,11 +1,23 @@
 package com.project.service;
 
+import com.project.service.config.TokenProvider;
+import com.project.service.contract.AuthResponse;
+import com.project.service.contract.LoginRequest;
 import com.project.service.entity.UserEntity;
 import com.project.service.contract.RegisterRequestObject;
+import com.project.service.exception.UserException;
 import com.project.service.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,39 +31,53 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private TokenProvider tokenProvider;
+
     /**
      * @param registerRequestObject
      * @return UserEntity
      */
-    public UserEntity registerUser(RegisterRequestObject registerRequestObject) {
-
-        Optional<UserEntity> optionalUserEntity = userRepository.findByName(registerRequestObject.getUsername());
-        if (optionalUserEntity.isPresent()) {
-            log.info("User already exists");
-            return null;
+    public AuthResponse registerUser(RegisterRequestObject registerRequestObject) throws UserException {
+        UserEntity user = userRepository.findByEmail(registerRequestObject.getEmail());
+        if(user != null) {
+            throw new UserException("Email is used with another account, Please use different email Id");
         }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setName(registerRequestObject.getUsername());
-        userEntity.setPassword(registerRequestObject.getPassword());
-        userEntity.setOnline(true);
-        log.info("Created User {}", userEntity.getId());
-        return userRepository.save(userEntity);
+        String email = registerRequestObject.getEmail();
+        String name = registerRequestObject.getUsername();
+        String password = registerRequestObject.getPassword();
+        UserEntity createdUser = new UserEntity();
+        createdUser.setEmail(email);
+        createdUser.setName(name);
+        createdUser.setPassword(this.passwordEncoder.encode(password));
+
+        userRepository.save(createdUser);
+
+        Authentication authentication = authenticate(email, password);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
+        String jwt = this.tokenProvider.generateToken(authentication);
+        return new AuthResponse(jwt, true);
     }
 
     /**
-     * @param registerRequestObject
+     * @param loginRequest
      * @return UserEntity
      */
-    public UserEntity loginUser(RegisterRequestObject registerRequestObject) {
-        Optional<UserEntity>  retrievedEntity = userRepository.findByNameAndPassword(registerRequestObject.getUsername(), registerRequestObject.getPassword());
-        if (retrievedEntity.isEmpty()) {
-            log.info("No User with the given credentials exists");
-            return null;
-        }
-        //Make the User Online and Update in DB
-        retrievedEntity.get().setOnline(true);
-        return userRepository.save(retrievedEntity.get());
+    public AuthResponse loginUser(LoginRequest loginRequest) {
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
 
+        Authentication authentication = this.authenticate(email, password);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = this.tokenProvider.generateToken(authentication);
+
+        return new AuthResponse(jwt, true);
     }
     /**
      * @param userId
@@ -75,5 +101,26 @@ public class UserService {
         return userRepository.findAllByOnline(true).stream()
                 .filter(userEntity -> !userEntity.getId().equals(uuid))
                 .collect(Collectors.toList());
+    }
+
+    public Authentication authenticate(String username, String password) {
+        UserDetails userDetails = loadUserByUsername(username);
+
+        if (userDetails == null) {
+            throw new BadCredentialsException("Invalid username");
+        }
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            throw new BadCredentialsException("Invalid password or username");
+        }
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity user = this.userRepository.findByEmail(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with provided username " + username);
+        }
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 }
