@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -24,6 +25,8 @@ public class ChatServiceImpl implements ChatService {
 
     @Autowired
     private ChatRepository chatRepository;
+    @Autowired
+    private HelperService helperService;
 
     @Override
     public ChatEntity createChat(UserEntity fromUser, UUID toUserId) throws UserException {
@@ -79,5 +82,44 @@ public class ChatServiceImpl implements ChatService {
 
         group = this.chatRepository.save(group);
         return group;
+    }
+
+    @Override
+    public List<ChatEntity> findAllChatByUserId(UUID userId) throws UserException {
+        UserEntity user = helperService.findUserById(userId);
+        return this.chatRepository.findChatByUserId(user.getId());
+    }
+
+    @Override
+    public ChatEntity addUserToGroup(UUID userId, UUID chatId, UserEntity reqUser) throws UserException, ChatException {
+        ChatEntity chat = this.chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException("The expected chat is not found"));
+
+        UserEntity user = helperService.findUserById(userId);
+
+        if (chat.getAdmins().contains((reqUser))) {
+            chat.getUsers().add(user);
+            return chat;
+        } else {
+            throw new UserException("You have not access to add user");
+        }
+    }
+
+    @Override
+    public ChatEntity removeFromGroup(UUID chatId, UUID userId, UserEntity reqUser) throws UserException, ChatException {
+        ChatEntity chat = this.chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatException("The expected chat is not found"));
+        UserEntity user = helperService.findUserById(userId);
+        if (chat.getAdmins().contains((reqUser))) {
+            chat.getUsers().remove(user);
+            return chat;
+        } else if (chat.getUsers().contains(reqUser)) {
+            if (user.getId() == reqUser.getId()) {
+                chat.getUsers().remove(user);
+                return this.chatRepository.save(chat);
+            }
+        }
+        throw new UserException("You have not access to remove user");
+
     }
 }

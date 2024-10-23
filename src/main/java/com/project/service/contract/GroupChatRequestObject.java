@@ -2,7 +2,7 @@ package com.project.service.contract;
 
 import lombok.*;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Getter
@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupChatRequestObject {
-    private List<UUID> userIds;
+    private ArrayList<UUID> userIds;
     private String chatName;
     private String chatImage;
 }

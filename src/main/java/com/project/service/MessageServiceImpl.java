@@ -55,19 +55,14 @@ public class MessageServiceImpl implements MessageService {
         } else {
             //messagingTemplate.convertAndSend("/user/" + chat.getId(), message);
             messagingTemplate.convertAndSendToUser(fromUser.getName(), "/queue/messages", message);
-
         }
 
         return message;
     }
 
     @Override
-    public List<MessageEntity> getChatsMessages(UUID chatId, UUID userId) throws ChatException, UserException {
-        UserEntity fromUser = userRepository.findById(userId).orElse(null);
-        if (fromUser == null) {
-            throw new UserException("From User Doesn't exist");
-        }
-        ChatEntity chat = this.chatService.findChatById(chatId);
+    public List<MessageEntity> getChatsMessages(UUID chatId, UserEntity fromUser) throws ChatException, UserException {
+        ChatEntity chat = chatService.findChatById(chatId);
 
         if (!chat.getUsers().contains(fromUser)) {
             throw new UserException("You are not related to this chat");
@@ -78,11 +73,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void deleteMessage(UUID messageId, UUID userId) throws MessageException, UserException {
-        UserEntity fromUser = userRepository.findById(userId).orElse(null);
-        if (fromUser == null) {
-            throw new UserException("From User Doesn't exist");
-        }
+    public void deleteMessage(UUID messageId, UserEntity fromUser) throws MessageException, UserException {
         MessageEntity message = this.messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageException("The required message is not found"));
 
