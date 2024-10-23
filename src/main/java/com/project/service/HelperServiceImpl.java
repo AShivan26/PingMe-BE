@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
-public class UserServiceHelper {
+public class HelperServiceImpl implements HelperService {
 
     @Autowired
     private UserRepository userRepository;
@@ -17,6 +19,7 @@ public class UserServiceHelper {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Override
     public UserEntity findUserProfile(String jwt) throws UserException {
         String email = tokenProvider.getEmailFromToken(jwt);
 
@@ -31,5 +34,10 @@ public class UserServiceHelper {
         }
         return user;
 
+    }
+
+    @Override
+    public UserEntity findUserById(UUID id) throws UserException {
+        return this.userRepository.findById(id).orElseThrow(() -> new UserException("The requested user is not found"));
     }
 }
