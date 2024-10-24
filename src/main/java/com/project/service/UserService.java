@@ -43,7 +43,7 @@ public class UserService {
      */
     public AuthResponse registerUser(RegisterRequestObject registerRequestObject) throws UserException {
         UserEntity user = userRepository.findByEmail(registerRequestObject.getEmail());
-        if(user != null) {
+        if (user != null) {
             throw new UserException("Email is used with another account, Please use different email Id");
         }
         String email = registerRequestObject.getEmail();
@@ -53,6 +53,7 @@ public class UserService {
         createdUser.setEmail(email);
         createdUser.setName(name);
         createdUser.setPassword(this.passwordEncoder.encode(password));
+        createdUser.setOnline(true);
 
         userRepository.save(createdUser);
 
@@ -68,9 +69,15 @@ public class UserService {
      * @param loginRequest
      * @return UserEntity
      */
-    public AuthResponse loginUser(LoginRequest loginRequest) {
+    public AuthResponse loginUser(LoginRequest loginRequest) throws UserException {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
+        UserEntity user = userRepository.findByEmail(email);
+        if (user != null) {
+            throw new UserException("User doesn't exist in system");
+        }
+        user.setOnline(false);
+        userRepository.save(user);
 
         Authentication authentication = this.authenticate(email, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -79,20 +86,22 @@ public class UserService {
 
         return new AuthResponse(jwt, true);
     }
+
     /**
-     * @param userId
+     * @param req
      * @return UserEntity
      */
-    public Boolean logOutUser(UUID userId) {
-        UserEntity retrievedEntity = userRepository.findById(userId).orElse(null);
+    public Boolean logOutUser(UserEntity req) {
+        UserEntity retrievedEntity = userRepository.findById(req.getId()).orElse(null);
         if (!Objects.isNull(retrievedEntity)) {
             retrievedEntity.setOnline(false);
             userRepository.save(retrievedEntity);
             return true;
-        }else {
+        } else {
             return false;
         }
     }
+
     /**
      * @param uuid
      * @return List of UserEntity except the uuid matching request

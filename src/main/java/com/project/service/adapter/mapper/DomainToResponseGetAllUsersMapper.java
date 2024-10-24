@@ -3,11 +3,12 @@ package com.project.service.adapter.mapper;
 import com.project.service.contract.UserResponseObject;
 import com.project.service.entity.UserEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class DomainToResponseGetAllUsersMapper {
     public List<UserResponseObject> PingMeGetAllUsersResponseMapper(List<UserEntity> listOfOnlineUsers) {
         return listOfOnlineUsers.stream()

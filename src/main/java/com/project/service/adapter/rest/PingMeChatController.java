@@ -2,9 +2,12 @@ package com.project.service.adapter.rest;
 
 import com.project.service.ChatService;
 import com.project.service.HelperService;
+import com.project.service.UserService;
+import com.project.service.adapter.mapper.DomainToResponseGetAllUsersMapper;
 import com.project.service.contract.ApiResponseObject;
 import com.project.service.contract.GroupChatRequestObject;
 import com.project.service.contract.SingleChatRequestObject;
+import com.project.service.contract.UserResponseObject;
 import com.project.service.entity.ChatEntity;
 import com.project.service.entity.UserEntity;
 import com.project.service.exception.ChatException;
@@ -27,6 +30,12 @@ public class PingMeChatController {
 
     @Autowired
     private HelperService helperService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private DomainToResponseGetAllUsersMapper domainToResponseGetAllUsersMapper;
 
 
     @PostMapping("/single")
@@ -88,5 +97,20 @@ public class PingMeChatController {
         UserEntity reqUser = helperService.findUserProfile(jwt);
         ChatEntity chat = chatService.removeFromGroup(userId, chatId, reqUser);
         return new ResponseEntity<ChatEntity>(chat, HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Boolean> pingMeLogout(@RequestHeader("Authorization") String jwt) throws UserException {
+        UserEntity reqUser = helperService.findUserProfile(jwt);
+        Boolean response = userService.logOutUser(reqUser);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserResponseObject>> pingMeGetAllUsers(@RequestHeader("Authorization") String jwt) throws UserException {
+        UserEntity reqUser = helperService.findUserProfile(jwt);
+        List<UserEntity> listOfOnlineUsers = userService.getAllUsers(reqUser.getId());
+        List<UserResponseObject> pingMeResponseObjects = domainToResponseGetAllUsersMapper.PingMeGetAllUsersResponseMapper(listOfOnlineUsers);
+        return new ResponseEntity<>(pingMeResponseObjects, HttpStatus.OK);
     }
 }
