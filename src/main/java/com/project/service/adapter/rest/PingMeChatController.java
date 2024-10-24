@@ -103,7 +103,7 @@ public class PingMeChatController {
     public ResponseEntity<Boolean> pingMeLogout(@RequestHeader("Authorization") String jwt) throws UserException {
         UserEntity reqUser = helperService.findUserProfile(jwt);
         Boolean response = userService.logOutUser(reqUser);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<Boolean>(response, HttpStatus.OK);
     }
 
     @GetMapping("/users")
@@ -111,6 +111,6 @@ public class PingMeChatController {
         UserEntity reqUser = helperService.findUserProfile(jwt);
         List<UserEntity> listOfOnlineUsers = userService.getAllUsers(reqUser.getId());
         List<UserResponseObject> pingMeResponseObjects = domainToResponseGetAllUsersMapper.PingMeGetAllUsersResponseMapper(listOfOnlineUsers);
-        return new ResponseEntity<>(pingMeResponseObjects, HttpStatus.OK);
+        return new ResponseEntity<List<UserResponseObject>>(pingMeResponseObjects, HttpStatus.OK);
     }
 }
