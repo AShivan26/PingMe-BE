@@ -80,7 +80,7 @@ public class ChatServiceImpl implements ChatService {
             group.getUsers().add(user);
         }
 
-        group = this.chatRepository.save(group);
+        group = chatRepository.save(group);
         return group;
     }
 
@@ -99,6 +99,7 @@ public class ChatServiceImpl implements ChatService {
 
         if (chat.getAdmins().contains((reqUser))) {
             chat.getUsers().add(user);
+            chatRepository.save(chat);
             return chat;
         } else {
             throw new UserException("You have not access to add user");
@@ -116,7 +117,8 @@ public class ChatServiceImpl implements ChatService {
         } else if (chat.getUsers().contains(reqUser)) {
             if (user.getId() == reqUser.getId()) {
                 chat.getUsers().remove(user);
-                return this.chatRepository.save(chat);
+                //Do we need this?
+                return chatRepository.save(chat);
             }
         }
         throw new UserException("You have not access to remove user");
