@@ -73,10 +73,10 @@ public class UserService {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
         UserEntity user = userRepository.findByEmail(email);
-        if (user != null) {
+        if (user == null) {
             throw new UserException("User doesn't exist in system");
         }
-        user.setOnline(false);
+        user.setOnline(true);
         userRepository.save(user);
 
         Authentication authentication = this.authenticate(email, password);
