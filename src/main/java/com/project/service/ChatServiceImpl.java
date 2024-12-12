@@ -33,8 +33,10 @@ public class ChatServiceImpl implements ChatService {
 
         UserEntity toUser = userRepository.findById(toUserId).orElse(null);
         if (toUser == null) {
+            log.error("To User Doesn't exist");
             throw new UserException("To User Doesn't exist");
         }
+        //If there is already a chat between the two users then return that chat details
         ChatEntity isChatExist = this.chatRepository.findSingleChatByUserIds(toUser, fromUser);
         log.info("The contents of toUser is : {}", isChatExist);
         System.out.println(isChatExist);
@@ -54,7 +56,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void deleteChat(UUID chatId, UserEntity fromUser) throws ChatException, UserException {
+    public void deleteChat(UUID chatId, UserEntity fromUser) throws ChatException {
         ChatEntity chat = this.chatRepository.findById(chatId)
                 .orElseThrow(() -> new ChatException("The expected chat is not found while deleting"));
         this.chatRepository.delete(chat);

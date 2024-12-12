@@ -12,6 +12,7 @@ import com.project.service.entity.ChatEntity;
 import com.project.service.entity.UserEntity;
 import com.project.service.exception.ChatException;
 import com.project.service.exception.UserException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/pingme/chats")
+@Slf4j
 public class PingMeChatController {
 
     @Autowired
@@ -58,10 +60,11 @@ public class PingMeChatController {
     @PostMapping("/group")
     public ResponseEntity<ChatEntity> createGroup(@RequestBody GroupChatRequestObject groupChatRequest,
                                                   @RequestHeader("Authorization") String jwt) throws UserException {
-        System.out.println(groupChatRequest);
+        log.info("Contents of create Group Chat request is {}", groupChatRequest);
         UserEntity reqUser = helperService.findUserProfile(jwt);
         ArrayList<UUID> list = groupChatRequest.getUserIds();
         list.add(reqUser.getId());
+        //Append the current user to the list
         groupChatRequest.setUserIds(list);
         ChatEntity chat = chatService.createGroup(groupChatRequest, reqUser);
         return new ResponseEntity<ChatEntity>(chat, HttpStatus.CREATED);
