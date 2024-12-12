@@ -1,6 +1,7 @@
 package com.project.service.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -21,7 +22,6 @@ import java.util.List;
 import static com.project.service.config.JwtConstant.JWT_HEADER;
 
 
-
 @Configuration
 public class AppConfig {
     @Bean
@@ -39,10 +39,10 @@ public class AppConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
                     @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                    public CorsConfiguration getCorsConfiguration(@NotNull HttpServletRequest request) {
                         CorsConfiguration cfg = new CorsConfiguration();
-                        cfg.setAllowedOrigins(Arrays.asList("http://localhost:8080","http://localhost:3000"));
-                        cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080","http://localhost:3000"));
+                        cfg.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:3000"));
+                        cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080", "http://localhost:3000"));
                         cfg.setAllowedMethods(Collections.singletonList("*"));
                         cfg.setAllowedHeaders(Collections.singletonList("*"));
                         cfg.setExposedHeaders(List.of(JWT_HEADER));
