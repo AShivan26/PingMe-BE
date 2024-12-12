@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,12 +21,11 @@ import java.util.List;
 import static com.project.service.config.JwtConstant.JWT_HEADER;
 
 
+
 @Configuration
 public class AppConfig {
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/h2-console/**").permitAll()
@@ -36,20 +36,17 @@ public class AppConfig {
                         .ignoringRequestMatchers("/h2-console/**")
                         .disable())
                 .headers(headers -> headers
-                        .frameOptions()
-                        .sameOrigin())
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration cfg = new CorsConfiguration();
-
                         cfg.setAllowedOrigins(Arrays.asList("http://localhost:8080","http://localhost:3000"));
                         cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080","http://localhost:3000"));
                         cfg.setAllowedMethods(Collections.singletonList("*"));
                         cfg.setAllowedHeaders(Collections.singletonList("*"));
                         cfg.setExposedHeaders(List.of(JWT_HEADER));
                         cfg.setMaxAge(3600L);
-
                         return cfg;
                     }
                 }))
