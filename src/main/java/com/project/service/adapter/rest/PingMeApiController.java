@@ -22,13 +22,13 @@ public class PingMeApiController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> pingMeRegister(@RequestBody RegisterRequestObject registerRequestObject) throws UserException {
         AuthResponse response = userService.registerUser(registerRequestObject);
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> pingMeLogin(@RequestBody LoginRequest loginRequest) throws UserException {
         AuthResponse response = userService.loginUser(loginRequest);
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
 
