@@ -39,6 +39,12 @@ public class PingMeChatController {
     @Autowired
     private DomainToResponseGetAllUsersMapper domainToResponseGetAllUsersMapper;
 
+    @PostMapping("/logout")
+    public ResponseEntity<Boolean> pingMeLogout(@RequestHeader("Authorization") String jwt) throws UserException {
+        UserEntity reqUser = helperService.findUserProfile(jwt);
+        Boolean response = userService.logOutUser(reqUser);
+        return new ResponseEntity<Boolean>(response, HttpStatus.OK);
+    }
 
     @PostMapping("/single")
     public ResponseEntity<ChatEntity> createChat(@RequestBody SingleChatRequestObject singleChatRequest,
@@ -102,12 +108,6 @@ public class PingMeChatController {
         return new ResponseEntity<ChatEntity>(chat, HttpStatus.OK);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Boolean> pingMeLogout(@RequestHeader("Authorization") String jwt) throws UserException {
-        UserEntity reqUser = helperService.findUserProfile(jwt);
-        Boolean response = userService.logOutUser(reqUser);
-        return new ResponseEntity<Boolean>(response, HttpStatus.OK);
-    }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserResponseObject>> pingMeGetAllUsers(@RequestHeader("Authorization") String jwt) throws UserException {
