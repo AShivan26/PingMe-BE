@@ -15,6 +15,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
+import static com.project.service.config.JwtConstant.JWT_HEADER;
 
 
 @Configuration
@@ -24,27 +27,34 @@ public class AppConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/pingme/**").authenticated()
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/pingme/**").authenticated()
                         .anyRequest().permitAll())
                 .addFilterBefore(new JwtValidator(), BasicAuthenticationFilter.class)
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**")
+                        .disable())
+                .headers(headers -> headers
+                        .frameOptions()
+                        .sameOrigin())
                 .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
-
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration cfg = new CorsConfiguration();
 
                         cfg.setAllowedOrigins(Arrays.asList("http://localhost:8080","http://localhost:3000"));
                         cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080","http://localhost:3000"));
-
                         cfg.setAllowedMethods(Collections.singletonList("*"));
                         cfg.setAllowedHeaders(Collections.singletonList("*"));
-                        cfg.setExposedHeaders(Arrays.asList("Authorization"));
+                        cfg.setExposedHeaders(List.of(JWT_HEADER));
                         cfg.setMaxAge(3600L);
 
                         return cfg;
                     }
-                })).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
+                }))
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
@@ -54,3 +64,4 @@ public class AppConfig {
         return new BCryptPasswordEncoder();
     }
 }
+

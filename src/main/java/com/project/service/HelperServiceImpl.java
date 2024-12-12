@@ -24,7 +24,7 @@ public class HelperServiceImpl implements HelperService {
         String email = tokenProvider.getEmailFromToken(jwt);
 
         if (email == null) {
-            throw new BadCredentialsException("Recieved invalid token...");
+            throw new BadCredentialsException("Received invalid token...");
         }
 
         UserEntity user = this.userRepository.findByEmail(email);

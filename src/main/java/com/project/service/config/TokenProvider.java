@@ -16,7 +16,7 @@ public class TokenProvider {
 
     public String generateToken(Authentication authentication) {
 
-        return Jwts.builder().setIssuer("AShivan")
+        return Jwts.builder().setIssuer("Ashivan")
                 .setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 86400000))
                 .claim("email", authentication.getName())
                 .signWith(key)
