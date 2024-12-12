@@ -36,13 +36,13 @@ This document provides an overview of the available API endpoints, including the
 | HTTP Method | API Endpoint           | Response Status | Description                                         |
 |:------------|:-----------------------|:----------------|:----------------------------------------------------|
 | `POST`      | `/auth/register`       | 201 (CREATED)   | Registers a new user in the system.Return JWT token |
-| `POST`      | `/pingme/login`        | 201 (CREATED)   | Authenticates and logs in a user.                   |
+| `POST`      | `/auth/login`          | 201 (CREATED)   | Authenticates and logs in a user.                   |
+| `POST`      | `/pingme/chats/logout` | 200 (OK)        | Logs out the user, Need to pass Bearer token.       |
 
 ### Chat Endpoints
 
 | HTTP Method | API Endpoint           | Response Status | Description                                         |
 |:------------|:-----------------------|:----------------|:----------------------------------------------------|
-| `POST`      | `/pingme/chats/logout` | 200 (OK)        | Logs out the user, Need to pass Bearer token.       |
 | `GET`       | `/pingme/chats/single` | 201 (OK)        | Creates a single chat between two users.       |
 | `DELETE`    | `/pingme/chats/delete/{chatId}`          | 200 (OK)        | Deletes the specified chat by `chatId`.              |
 | `POST`      | `/pingme/chats/group`                    | 201 (Created)   | Creates a group chat with a list of users.           |
