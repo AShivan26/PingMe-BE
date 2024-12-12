@@ -44,6 +44,7 @@ public class UserService {
     public AuthResponse registerUser(RegisterRequestObject registerRequestObject) throws UserException {
         UserEntity user = userRepository.findByEmail(registerRequestObject.getEmail());
         if (user != null) {
+            log.error("Email is used with another account, Please use different email Id");
             throw new UserException("Email is used with another account, Please use different email Id");
         }
         String email = registerRequestObject.getEmail();
@@ -62,6 +63,7 @@ public class UserService {
 
 
         String jwt = this.tokenProvider.generateToken(authentication);
+        log.info("Jwt is: {} ", jwt);
         return new AuthResponse(jwt, true);
     }
 
@@ -84,6 +86,7 @@ public class UserService {
 
         String jwt = this.tokenProvider.generateToken(authentication);
 
+        log.info("Jwt is: {} ", jwt);
         return new AuthResponse(jwt, true);
     }
 
@@ -96,8 +99,10 @@ public class UserService {
         if (!Objects.isNull(retrievedEntity)) {
             retrievedEntity.setOnline(false);
             userRepository.save(retrievedEntity);
+            log.info("logged out successfully ");
             return true;
         } else {
+            log.info("Couldn't logout ");
             return false;
         }
     }
@@ -116,17 +121,21 @@ public class UserService {
         UserDetails userDetails = loadUserByUsername(username);
 
         if (userDetails == null) {
+            log.error("Invalid username");
             throw new BadCredentialsException("Invalid username");
         }
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            log.error("Invalid password or username");
             throw new BadCredentialsException("Invalid password or username");
         }
+        log.info("Username authenticated: {}", userDetails.getUsername());
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = this.userRepository.findByEmail(username);
         if (user == null) {
+            log.error("User not found with provided username {}", username);
             throw new UsernameNotFoundException("User not found with provided username " + username);
         }
         List<GrantedAuthority> authorities = new ArrayList<>();
