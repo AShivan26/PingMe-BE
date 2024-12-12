@@ -59,7 +59,7 @@ This document provides an overview of the available API endpoints, including the
 | `POST`      | `/pingme/messages/create`                | 200 (OK)         | Sends a message to a chat.                           |
 | `GET`       | `/pingme/messages/{chatId}`              | 200 (OK)         | Retrieves all messages for a given chat.             |
 | `DELETE`    | `/pingme/messages/{messageId}`           | 200 (OK)         | Deletes a message by `messageId`.                    |
-                                                                                                                                                  |
+                                                                                                              
 ## Who do I talk to? ###
 - [Aniruddha Shivananda](mailto:aniruddhams2023@gmail.com)
 - [Surya Sukumar](mailto:Suryasukumar0911@gmail.com)
