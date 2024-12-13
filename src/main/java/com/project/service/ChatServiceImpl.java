@@ -4,6 +4,7 @@ import com.project.service.contract.GroupChatRequestObject;
 import com.project.service.entity.ChatEntity;
 import com.project.service.entity.UserEntity;
 import com.project.service.exception.ChatException;
+import com.project.service.exception.ExceptionReason;
 import com.project.service.exception.UserException;
 import com.project.service.persistence.ChatRepository;
 import com.project.service.persistence.UserRepository;
@@ -34,7 +35,7 @@ public class ChatServiceImpl implements ChatService {
         UserEntity toUser = userRepository.findById(toUserId).orElse(null);
         if (toUser == null) {
             log.error("To User Doesn't exist");
-            throw new UserException("To User Doesn't exist");
+            throw new UserException("To User Doesn't exist", ExceptionReason.USER_NOT_EXIST.name());
         }
         //If there is already a chat between the two users then return that chat details
         ChatEntity isChatExist = this.chatRepository.findSingleChatByUserIds(toUser, fromUser);
@@ -58,14 +59,14 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void deleteChat(UUID chatId, UserEntity fromUser) throws ChatException {
         ChatEntity chat = this.chatRepository.findById(chatId)
-                .orElseThrow(() -> new ChatException("The expected chat is not found while deleting"));
+                .orElseThrow(() -> new ChatException("The expected chat is not found while deleting", ExceptionReason.CHAT_NOT_FOUND.name()));
         this.chatRepository.delete(chat);
     }
 
     @Override
     public ChatEntity findChatById(UUID chatId) throws ChatException {
         return this.chatRepository.findById(chatId)
-                .orElseThrow(() -> new ChatException("The requested chat is not found"));
+                .orElseThrow(() -> new ChatException("The requested chat is not found", ExceptionReason.CHAT_NOT_FOUND.name()));
     }
 
     @Override
@@ -78,7 +79,7 @@ public class ChatServiceImpl implements ChatService {
         group.getAdmins().add(fromUser);
 
         for (UUID userId : req.getUserIds()) {
-            UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserException("The requested user is not found"));
+            UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserException("The requested user is not found", ExceptionReason.USER_NOT_EXIST.name()));
             group.getUsers().add(user);
         }
 
@@ -95,7 +96,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatEntity addUserToGroup(UUID userId, UUID chatId, UserEntity reqUser) throws UserException, ChatException {
         ChatEntity chat = this.chatRepository.findById(chatId)
-                .orElseThrow(() -> new ChatException("The expected chat is not found"));
+                .orElseThrow(() -> new ChatException("The expected chat is not found", ExceptionReason.CHAT_NOT_FOUND.name()));
 
         UserEntity user = helperService.findUserById(userId);
 
@@ -104,14 +105,14 @@ public class ChatServiceImpl implements ChatService {
             chatRepository.save(chat);
             return chat;
         } else {
-            throw new UserException("You have not access to add user");
+            throw new UserException("You have do not have access to add user", ExceptionReason.USER_NOT_ADMIN.name());
         }
     }
 
     @Override
     public ChatEntity removeFromGroup(UUID chatId, UUID userId, UserEntity reqUser) throws UserException, ChatException {
         ChatEntity chat = this.chatRepository.findById(chatId)
-                .orElseThrow(() -> new ChatException("The expected chat is not found"));
+                .orElseThrow(() -> new ChatException("The expected chat is not found", ExceptionReason.CHAT_NOT_FOUND.name()));
         UserEntity user = helperService.findUserById(userId);
         if (chat.getAdmins().contains((reqUser))) {
             chat.getUsers().remove(user);
@@ -123,7 +124,7 @@ public class ChatServiceImpl implements ChatService {
                 return chatRepository.save(chat);
             }
         }
-        throw new UserException("You have not access to remove user");
+        throw new UserException("You have not access to remove user", ExceptionReason.USER_NOT_ADMIN.name());
 
     }
 }

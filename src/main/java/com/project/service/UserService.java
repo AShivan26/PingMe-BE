@@ -5,6 +5,7 @@ import com.project.service.contract.AuthResponse;
 import com.project.service.contract.LoginRequest;
 import com.project.service.entity.UserEntity;
 import com.project.service.contract.RegisterRequestObject;
+import com.project.service.exception.ExceptionReason;
 import com.project.service.exception.UserException;
 import com.project.service.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class UserService {
         UserEntity user = userRepository.findByEmail(registerRequestObject.getEmail());
         if (user != null) {
             log.error("Email is used with another account, Please use different email Id");
-            throw new UserException("Email is used with another account, Please use different email Id");
+            throw new UserException("Email is used with another account, Please use different email Id", ExceptionReason.EMAIL_UNAVAILABLE.name());
         }
         String email = registerRequestObject.getEmail();
         String name = registerRequestObject.getUsername();
@@ -76,7 +77,7 @@ public class UserService {
         String password = loginRequest.getPassword();
         UserEntity user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UserException("User doesn't exist in system");
+            throw new UserException("User doesn't exist in system", ExceptionReason.USER_NOT_EXIST.name());
         }
         user.setOnline(true);
         userRepository.save(user);

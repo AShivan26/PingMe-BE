@@ -5,6 +5,7 @@ import com.project.service.entity.ChatEntity;
 import com.project.service.entity.MessageEntity;
 import com.project.service.entity.UserEntity;
 import com.project.service.exception.ChatException;
+import com.project.service.exception.ExceptionReason;
 import com.project.service.exception.MessageException;
 import com.project.service.exception.UserException;
 import com.project.service.persistence.MessageRepository;
@@ -37,7 +38,7 @@ public class MessageServiceImpl implements MessageService {
     public MessageEntity sendMessage(SendMessageRequest req) throws UserException, ChatException {
         UserEntity fromUser = userRepository.findById(req.getUserId()).orElse(null);
         if (fromUser == null) {
-            throw new UserException("From User Doesn't exist");
+            throw new UserException("From User Doesn't exist", ExceptionReason.USER_NOT_EXIST.name());
         }
         ChatEntity chat = chatService.findChatById(req.getChatId());
 
@@ -64,7 +65,7 @@ public class MessageServiceImpl implements MessageService {
         ChatEntity chat = chatService.findChatById(chatId);
 
         if (!chat.getUsers().contains(fromUser)) {
-            throw new UserException("You are not related to this chat");
+            throw new UserException("You are not related to this chat",ExceptionReason.FORBIDDEN_ACCESS.name());
         }
 
         return this.messageRepository.findByChatId(chat.getId());
@@ -74,12 +75,12 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void deleteMessage(UUID messageId, UserEntity fromUser) throws MessageException, UserException {
         MessageEntity message = this.messageRepository.findById(messageId)
-                .orElseThrow(() -> new MessageException("The required message is not found"));
+                .orElseThrow(() -> new MessageException("The required message is not found", ExceptionReason.MESSAGE_NOT_FOUND.name()));
 
         if (message.getUser().getId() == fromUser.getId()) {
             this.messageRepository.delete(message);
         } else {
-            throw new MessageException("You are not authorized for this task");
+            throw new MessageException("You are not authorized for this task",ExceptionReason.FORBIDDEN_ACCESS.name());
         }
     }
 }

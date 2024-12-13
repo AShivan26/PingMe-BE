@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class ErrorDetail {
 
     private String error;
+    private String reason;
 
     private String message;
 
@@ -13,10 +14,12 @@ public class ErrorDetail {
     public String getError() {
         return error;
     }
+    public String getReason() {return reason;}
 
     public void setError(String error) {
         this.error = error;
     }
+    public void setReason(String reason) {this.reason = reason;}
 
     public String getMessage() {
         return message;
@@ -37,15 +40,16 @@ public class ErrorDetail {
     public ErrorDetail() {
     }
 
-    public ErrorDetail(String error, String message, LocalDateTime timeStamp) {
+    public ErrorDetail(String error, String message, LocalDateTime timeStamp, String reason) {
         this.error = error;
         this.message = message;
         this.timeStamp = timeStamp;
+        this.reason = reason;
     }
 
     @Override
     public String toString() {
-        return "ErrorDetail [error=" + error + ", message=" + message + ", timeStamp=" + timeStamp + "]";
+        return "ErrorDetail [error=" + error + ", message=" + message +  ", reason=" + reason + ", timeStamp=" + timeStamp + "]";
     }
 
 }
