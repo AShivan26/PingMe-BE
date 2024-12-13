@@ -1,9 +1,13 @@
 package com.project.service.exception;
 
-public class MessageException extends Exception {
+import lombok.Getter;
 
-    public MessageException(String message) {
+public class MessageException extends Exception {
+    @Getter
+    private final String reason;
+    public MessageException(String message, String reason) {
         super(message);
+        this.reason = reason;
     }
 
 }

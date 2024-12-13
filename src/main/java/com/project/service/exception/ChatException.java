@@ -1,9 +1,13 @@
 package com.project.service.exception;
 
-public class ChatException extends Exception {
+import lombok.Getter;
 
-    public ChatException(String message) {
+@Getter
+public class ChatException extends Exception {
+    private final String reason;
+    public ChatException(String message, String reason) {
         super(message);
+        this.reason = reason;
     }
 
 }

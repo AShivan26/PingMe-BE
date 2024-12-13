@@ -2,6 +2,7 @@ package com.project.service;
 
 import com.project.service.config.TokenProvider;
 import com.project.service.entity.UserEntity;
+import com.project.service.exception.ExceptionReason;
 import com.project.service.exception.UserException;
 import com.project.service.persistence.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class HelperServiceImpl implements HelperService {
 
         if (user == null) {
             log.error("User not found with the provided email");
-            throw new UserException("User not found with the provided email ");
+            throw new UserException("User not found with the provided email ", ExceptionReason.USER_NOT_EXIST.name());
         }
         return user;
 
@@ -42,6 +43,6 @@ public class HelperServiceImpl implements HelperService {
 
     @Override
     public UserEntity findUserById(UUID id) throws UserException {
-        return this.userRepository.findById(id).orElseThrow(() -> new UserException("The requested user is not found"));
+        return this.userRepository.findById(id).orElseThrow(() -> new UserException("The requested user is not found", ExceptionReason.USER_NOT_EXIST.name()));
     }
 }
