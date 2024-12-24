@@ -14,9 +14,6 @@ public class DataInitializer {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private UserRepository userRepository;
-
     @PostConstruct
     public void initializeData() {
         String password1 = passwordEncoder.encode("secret1");
