@@ -79,14 +79,14 @@ public class UserService {
         if (user == null) {
             throw new UserException("User doesn't exist in system", ExceptionReason.USER_NOT_EXIST.name());
         }
-        user.setOnline(true);
-        userRepository.save(user);
 
         Authentication authentication = this.authenticate(email, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = this.tokenProvider.generateToken(authentication);
 
+        user.setOnline(true);
+        userRepository.save(user);
         log.info("Jwt is: {} ", jwt);
         return new AuthResponse(jwt, true);
     }
