@@ -65,7 +65,7 @@ public class UserService {
 
         String jwt = this.tokenProvider.generateToken(authentication);
         log.info("Jwt is: {} ", jwt);
-        return new AuthResponse(jwt, true);
+        return new AuthResponse(jwt, true, name);
     }
 
     /**
@@ -88,7 +88,7 @@ public class UserService {
         user.setOnline(true);
         userRepository.save(user);
         log.info("Jwt is: {} ", jwt);
-        return new AuthResponse(jwt, true);
+        return new AuthResponse(jwt, true, user.getName());
     }
 
     /**
