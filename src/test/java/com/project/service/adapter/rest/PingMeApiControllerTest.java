@@ -2,6 +2,7 @@ package com.project.service.adapter.rest;
 
 import com.project.service.BaseUnitTest;
 import com.project.service.contract.AuthResponse;
+import com.project.service.contract.LoginRequest;
 import com.project.service.contract.RegisterRequestObject;
 import com.project.service.exception.ExceptionReason;
 import com.project.service.exception.UserException;
@@ -42,7 +43,7 @@ class PingMeApiControllerTest extends BaseUnitTest {
                     ),
                     () -> Assertions.assertEquals(
                             registerRequestObject.getUsername(),
-                            response.getBody().getUserName(),
+                            Objects.requireNonNull(response.getBody()).getUserName(),
                             "Username mismatch"
                     )
             );
@@ -87,36 +88,52 @@ class PingMeApiControllerTest extends BaseUnitTest {
         }
     }
 
+    @Nested
+    class loginTestClass {
+        @Test
+        public void testPingMeLoginNonExistentUser() {
+            LoginRequest loginRequest = new LoginRequest(
+                    "test4@gmail.com",
+                    "secret1");
+            UserException exception = Assertions.assertThrowsExactly(UserException.class, () -> pingMeApiController.pingMeLogin(loginRequest));
+
+            Assertions.assertAll(
+                    "Validating non existing login user",
+                    () -> Assertions.assertEquals("User doesn't exist in system", exception.getMessage()),
+                    () -> Assertions.assertEquals(ExceptionReason.USER_NOT_EXIST.name(), exception.getReason())
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideExistingLoginUsers")
+        public void testPingMeLoginExistentUser(LoginRequest loginRequest) throws UserException {
+
+            ResponseEntity<AuthResponse> responseEntity = pingMeApiController.pingMeLogin(loginRequest);
+            Assertions.assertAll("Validating exsisting user through login",
+                    () -> Assertions.assertNotNull(responseEntity),
+                    () -> Assertions.assertNotNull(Objects.requireNonNull(responseEntity.getBody()).getUserName()),
+                    () -> Assertions.assertNotNull(Objects.requireNonNull(responseEntity.getBody()).getJwt()),
+                    () -> Assertions.assertTrue(
+                            () -> Objects.requireNonNull(responseEntity.getBody()).isAuth(),
+                            () -> "User should be authenticated (conditionally/lazily evaluated)"
+                    ));
+        }
+
+        private static Stream<LoginRequest> provideExistingLoginUsers() {
+            LoginRequest loginRequestObject1 = new LoginRequest(
+                    "test1@gmail.com",
+                    "secret1");
+            LoginRequest loginRequestObject2 = new LoginRequest(
+                    "test2@gmail.com",
+                    "secret2");
+
+            return Stream.of(loginRequestObject1, loginRequestObject2);
+
+        }
+    }
 }
 
 
-//
-//    @Test
-//    public void testPingMeLoginNonExistentUser() {
-//        RegisterRequestObject registerRequestObject = new RegisterRequestObject("ashivan", "test123");
-//        ResponseEntity<RegisterResponseObject> responseEntity = pingMeApiController.pingMeLogin(registerRequestObject);
-//        Assertions.assertNotNull(responseEntity);
-//        Assertions.assertEquals("400", Objects.requireNonNull(responseEntity.getBody()).getError().getErrorCode());
-//        Assertions.assertEquals("User Doesn't Exist", responseEntity.getBody().getError().getMessage());
-//        Assertions.assertTrue(responseEntity.getBody().getError().isRetriable());
-//        Assertions.assertEquals(HttpStatus.BAD_REQUEST.name(), responseEntity.getBody().getError().getTitle());
-//    }
-//
-//    @Test
-//    public void testPingMeLoginExistentUser() {
-//        //Data adding in DB
-//        RegisterRequestObject registerRequestObject = new RegisterRequestObject("ashivan27", "test123");
-//        UserEntity userEntity = new UserEntity();
-//        userEntity.setName(registerRequestObject.getUsername());
-//        userEntity.setPassword(registerRequestObject.getPassword());
-//        userEntity.setOnline(false);
-//        userRepository.save(userEntity);
-//
-//        ResponseEntity<RegisterResponseObject> responseEntity = pingMeApiController.pingMeLogin(registerRequestObject);
-//        Assertions.assertNotNull(responseEntity);
-//        Assertions.assertNotNull(Objects.requireNonNull(responseEntity.getBody()).getUserId());
-//        Assertions.assertNull(responseEntity.getBody().getError());
-//    }
 //
 //    @Test
 //    public void testPingMeLogOutExistingUser() {
