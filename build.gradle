@@ -42,7 +42,6 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
-    // https://mvnrepository.com/artifact/org.springframework/spring-websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
@@ -56,12 +55,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
-    testImplementation platform("org.testcontainers:testcontainers-bom:1.20.2")
-    testImplementation "org.testcontainers:postgresql"
+    testImplementation platform("org.testcontainers:testcontainers-bom:1.20.4")
     testImplementation "org.testcontainers:junit-jupiter"
     testImplementation "org.springframework.security:spring-security-test"
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.mockito:mockito-inline:4.7.0'
 }
 /**
  * Apply SpotBugs to the code before even running the testcases

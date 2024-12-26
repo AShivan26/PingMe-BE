@@ -1,57 +1,95 @@
-//package com.project.service.adapter.rest;
-//
-//import com.project.service.BaseUnitTest;
-//import com.project.service.contract.RegisterRequestObject;
-//import com.project.service.contract.RegisterResponseObject;
-//import com.project.service.contract.UserResponseObject;
-//import com.project.service.entity.UserEntity;
-//import com.project.service.persistence.UserRepository;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//
-//import java.util.List;
-//import java.util.Objects;
-//import java.util.Optional;
-//import java.util.UUID;
-//
-//public class PingMeApiControllerTest extends BaseUnitTest {
-//    @Autowired
-//    private PingMeApiController pingMeApiController;
-//    @Autowired
-//    private UserRepository userRepository;
-//
-//    @Test
-//    public void testPingMeRegisterNewUser() {
-//        RegisterRequestObject registerRequestObject = new RegisterRequestObject("ashivan", "test123");
-//        ResponseEntity<RegisterResponseObject> registerResponseObject = pingMeApiController.pingMeRegister(registerRequestObject);
-//        Assertions.assertNotNull(Objects.requireNonNull(registerResponseObject.getBody()).getUserId());
-//        Optional<UserEntity> optionalUserEntity = userRepository.findByName(registerRequestObject.getUsername());
-//        Assertions.assertTrue(optionalUserEntity.isPresent());
-//        UserEntity userEntity = optionalUserEntity.get();
-//        Assertions.assertEquals(registerRequestObject.getUsername(), userEntity.getName());
-//        Assertions.assertEquals(registerRequestObject.getPassword(), userEntity.getPassword());
-//    }
-//
-//    @Test
-//    public void testPingMeRegisterExistingUser() {
-//        //Data adding in DB
-//        RegisterRequestObject registerRequestObject = new RegisterRequestObject("ashivan26", "test123");
-//        UserEntity userEntity = new UserEntity();
-//        userEntity.setName(registerRequestObject.getUsername());
-//        userEntity.setPassword(registerRequestObject.getPassword());
-//        userEntity.setOnline(true);
-//        userRepository.save(userEntity);
-//
-//        ResponseEntity<RegisterResponseObject> registerResponseObject = pingMeApiController.pingMeRegister(registerRequestObject);
-//        Assertions.assertNull(Objects.requireNonNull(registerResponseObject.getBody()).getUserId());
-//        Assertions.assertEquals("400", registerResponseObject.getBody().getError().getErrorCode());
-//        Assertions.assertEquals("UserName is Already Taken", registerResponseObject.getBody().getError().getMessage());
-//        Assertions.assertFalse(registerResponseObject.getBody().getError().isRetriable());
-//        Assertions.assertEquals(HttpStatus.BAD_REQUEST.name(), registerResponseObject.getBody().getError().getTitle());
-//    }
+package com.project.service.adapter.rest;
+
+import com.project.service.BaseUnitTest;
+import com.project.service.contract.AuthResponse;
+import com.project.service.contract.RegisterRequestObject;
+import com.project.service.exception.ExceptionReason;
+import com.project.service.exception.UserException;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Objects;
+import java.util.stream.Stream;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class PingMeApiControllerTest extends BaseUnitTest {
+
+    @Autowired
+    private PingMeApiController pingMeApiController;
+
+    @Nested
+    class registerTestClass {
+
+        @ParameterizedTest
+        @MethodSource("provideNewRegisterUsers")
+        void testPingMeRegisterNewUser(RegisterRequestObject registerRequestObject) throws UserException {
+            ResponseEntity<AuthResponse> response = pingMeApiController.pingMeRegister(registerRequestObject);
+
+            Assertions.assertAll(
+                    "Validating register response",
+                    () -> Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode(),
+                            "Unexpected status code"),
+                    () -> Assertions.assertTrue(
+                            Objects.requireNonNull(response.getBody()).isAuth(),
+                            "User should be authenticated (will be evaluated)"),
+                    () -> Assertions.assertTrue(
+                            () -> Objects.requireNonNull(response.getBody()).isAuth(),
+                            () -> "User should be authenticated (conditionally/lazily evaluated)"
+                    ),
+                    () -> Assertions.assertEquals(
+                            registerRequestObject.getUsername(),
+                            response.getBody().getUserName(),
+                            "Username mismatch"
+                    )
+            );
+        }
+
+        private static Stream<RegisterRequestObject> provideNewRegisterUsers() {
+            RegisterRequestObject registerRequestObject1 = new RegisterRequestObject(
+                    "ashivan@gmail.com",
+                    "ashivan",
+                    "ashivan_profile",
+                    "secret_ashivan");
+
+            RegisterRequestObject registerRequestObject2 = new RegisterRequestObject(
+                    "aniruddha@gmail.com",
+                    "Aniruddha",
+                    "ani_profile",
+                    "secret_aniruddha");
+
+            return Stream.of(registerRequestObject1, registerRequestObject2);
+        }
+
+        @DisplayName("I can be renamed unlike you \uD83D\uDE05")
+        @Test
+        void testPingMeRegisterExistingUser() {
+            RegisterRequestObject registerRequestObject = new RegisterRequestObject(
+                    "test1@gmail.com",
+                    "ashivan",
+                    "ashivan_profile",
+                    "secret1");
+
+            UserException exception = Assertions.assertThrowsExactly(UserException.class,
+                    () -> pingMeApiController.pingMeRegister(registerRequestObject));
+
+            Assertions.assertAll(
+                    "Validating Register Existing User",
+                    () -> Assertions.assertEquals("Email is used with another account, Please use different email Id",
+                            exception.getMessage()),
+                    () -> Assertions.assertEquals(ExceptionReason.EMAIL_UNAVAILABLE.name(),
+                            exception.getReason())
+
+            );
+        }
+    }
+
+}
+
+
 //
 //    @Test
 //    public void testPingMeLoginNonExistentUser() {
@@ -124,4 +162,3 @@
 //        ResponseEntity<List<UserResponseObject>> listResponseEntity = pingMeApiController.pingMeGetAllUsers(secondSpecificUUID);
 //        Assertions.assertNotEquals(0, Objects.requireNonNull(listResponseEntity.getBody()).size());
 //    }
-//}
