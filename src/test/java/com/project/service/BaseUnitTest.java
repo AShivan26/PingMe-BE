@@ -1,16 +1,14 @@
 package com.project.service;
 
 import com.project.service.ping_me.PingMeApplication;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = PingMeApplication.class) // Replace MyApplication with your main application class
+@SpringBootTest(classes = PingMeApplication.class)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaseUnitTest {
@@ -20,10 +18,24 @@ public class BaseUnitTest {
         System.setProperty("spring.application.name","PingMe");
     }
 
+    @BeforeAll
+    static void setUpBeforeAllClass() {
+        System.out.println("@BeforeAll - executes before all");
+    }
+
     @BeforeEach
     public void setUp() {
+        System.out.println("@BeforeEach - executes before each test method in this class");
     }
+
     @AfterEach
     public void clear() {
+        System.out.println("@AfterEach - executes after each test method in this class");
+    }
+
+
+    @AfterAll
+    static void setUpAfterAllClass() {
+        System.out.println("@AfterAll - executes after all");
     }
 }
