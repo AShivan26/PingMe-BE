@@ -41,8 +41,8 @@ public class AppConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(@NotNull HttpServletRequest request) {
                         CorsConfiguration cfg = new CorsConfiguration();
-                        cfg.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:3000"));
-                        cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080", "http://localhost:3000"));
+                        cfg.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:3000","http://localhost:8080/ws"));
+                        cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080", "http://localhost:3000","http://localhost:8080/ws"));
                         cfg.setAllowedMethods(Collections.singletonList("*"));
                         cfg.setAllowedHeaders(Collections.singletonList("*"));
                         cfg.setExposedHeaders(List.of(JWT_HEADER));
