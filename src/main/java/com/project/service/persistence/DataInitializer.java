@@ -1,18 +1,20 @@
 package com.project.service.persistence;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Component
+@RequiredArgsConstructor
 public class DataInitializer {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final PasswordEncoder passwordEncoder;
+
+    private final JdbcTemplate jdbcTemplate;
 
     @PostConstruct
     public void initializeData() {

@@ -10,7 +10,6 @@ import com.project.service.persistence.ChatRepository;
 import com.project.service.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +20,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ChatRepository chatRepository;
-    @Autowired
-    private HelperService helperService;
+    private final ChatRepository chatRepository;
+
+    private  final HelperService helperService;
 
     @Override
     public ChatEntity createChat(UserEntity fromUser, UUID toUserId) throws UserException {

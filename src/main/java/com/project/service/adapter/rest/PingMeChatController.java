@@ -12,8 +12,8 @@ import com.project.service.entity.ChatEntity;
 import com.project.service.entity.UserEntity;
 import com.project.service.exception.ChatException;
 import com.project.service.exception.UserException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,19 +25,16 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/pingme/chats")
 @Slf4j
+@RequiredArgsConstructor
 public class PingMeChatController {
 
-    @Autowired
-    private ChatService chatService;
+    private final ChatService chatService;
 
-    @Autowired
-    private HelperService helperService;
+    private final HelperService helperService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private DomainToResponseGetAllUsersMapper domainToResponseGetAllUsersMapper;
+    private final DomainToResponseGetAllUsersMapper domainToResponseGetAllUsersMapper;
 
     @PostMapping("/logout")
     public ResponseEntity<Boolean> pingMeLogout(@RequestHeader("Authorization") String jwt) throws UserException {
