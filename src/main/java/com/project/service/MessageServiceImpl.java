@@ -10,6 +10,7 @@ import com.project.service.exception.MessageException;
 import com.project.service.exception.UserException;
 import com.project.service.persistence.MessageRepository;
 import com.project.service.persistence.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -21,18 +22,16 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
-    @Autowired
-    private MessageRepository messageRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final MessageRepository messageRepository;
 
-    @Autowired
-    private ChatService chatService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final ChatService chatService;
+
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public MessageEntity sendMessage(SendMessageRequest req) throws UserException, ChatException {

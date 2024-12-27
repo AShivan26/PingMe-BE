@@ -5,6 +5,7 @@ import com.project.service.entity.UserEntity;
 import com.project.service.exception.ExceptionReason;
 import com.project.service.exception.UserException;
 import com.project.service.persistence.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,13 +15,12 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class HelperServiceImpl implements HelperService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
 
     @Override
     public UserEntity findUserProfile(String jwt) throws UserException {
