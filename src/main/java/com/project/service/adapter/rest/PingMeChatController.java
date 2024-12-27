@@ -74,7 +74,8 @@ public class PingMeChatController {
     }
 
     @GetMapping("/{chatId}")
-    public ResponseEntity<ChatEntity> findChatById(@PathVariable UUID chatId) throws ChatException {
+    public ResponseEntity<ChatEntity> findChatById(@PathVariable UUID chatId, @RequestHeader("Authorization") String jwt) throws ChatException, UserException {
+        UserEntity reqUser = helperService.findUserProfile(jwt);
         ChatEntity chat = chatService.findChatById(chatId);
         return new ResponseEntity<ChatEntity>(chat, HttpStatus.OK);
     }
