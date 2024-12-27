@@ -5,7 +5,6 @@ import com.project.service.UserService;
 
 import com.project.service.exception.UserException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class PingMeApiController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> pingMeRegister(@RequestBody RegisterRequestObject registerRequestObject) throws UserException {

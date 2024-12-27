@@ -29,14 +29,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
 
     /**
      * @param registerRequestObject
