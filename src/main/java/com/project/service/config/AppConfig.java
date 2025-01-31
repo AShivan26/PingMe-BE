@@ -37,24 +37,22 @@ public class AppConfig {
                         .disable())
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(@NotNull HttpServletRequest request) {
-                        CorsConfiguration cfg = new CorsConfiguration();
-                        cfg.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:3000","http://localhost:8080/ws"));
-                        cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080", "http://localhost:3000","http://localhost:8080/ws"));
-                        cfg.setAllowedMethods(Collections.singletonList("*"));
-                        cfg.setAllowedHeaders(Collections.singletonList("*"));
-                        cfg.setExposedHeaders(List.of(JWT_HEADER));
-                        cfg.setMaxAge(3600L);
-                        return cfg;
-                    }
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration cfg = new CorsConfiguration();
+                    cfg.setAllowedOrigins(List.of("http://localhost:3000")); // Set specific origin
+                    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow necessary methods
+                    cfg.setAllowedHeaders(List.of("*")); // Allow all headers
+                    cfg.setExposedHeaders(List.of(JWT_HEADER)); // Expose JWT header
+                    cfg.setAllowCredentials(true); // **Enable credentials**
+                    cfg.setMaxAge(3600L);
+                    return cfg;
                 }))
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
+
 
     @Bean
     PasswordEncoder passwordEncoder() {
